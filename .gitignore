@@ -1,0 +1,56 @@
+# IDE / Editors
+.idea/
+.vscode/
+*.iml
+*.suo
+*.user
+*.swp
+*.swo
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build / test output
+dist/
+build/
+out/
+coverage/
+__snapshots__/
+.next/
+.nuxt/
+.svelte-kit/
+*.tsbuildinfo
+
+# Tooling caches
+.cache/
+.eslintcache
+.parcel-cache/
+.turbo/
+.vite/
+
+# Environment files
+.env
+.env.*
+*.env
+
+# OS / filesystem junk
+.DS_Store
+Thumbs.db
+
+# Temp files
+tmp/
+temp/
+
+# Optional hosting / docs outputs
+.vercel/
+.netlify/
+.docusaurus/
+.storybook-out/
