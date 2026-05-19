@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateMaze, Algorithm, Format } from '../../src/index';
+import { generateMaze, Algorithm, Format } from '../../src';
 import { matrixToGraph } from '../../src/utils/graph';
 
 describe('matrixToGraph', () => {

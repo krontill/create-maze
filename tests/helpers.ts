@@ -2,7 +2,7 @@
  * Shared test helpers for maze-builder tests.
  */
 
-import type { MazeMatrix } from '../src/types';
+import type { MazeMatrix } from '../src';
 
 /**
  * BFS connectivity check: verifies all W×H cells are reachable
