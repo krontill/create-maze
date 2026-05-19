@@ -1,0 +1,36 @@
+{
+  "name": "maze-builder",
+  "version": "0.1.0",
+  "description": "Framework-agnostic, pure TypeScript maze generation library",
+  "type": "module",
+  "main": "./dist/maze-builder.cjs",
+  "module": "./dist/maze-builder.js",
+  "exports": {
+    ".": {
+      "import": "./dist/maze-builder.js",
+      "require": "./dist/maze-builder.cjs"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["maze", "maze-generation", "algorithm", "dfs", "prims", "kruskals"],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^1.6.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11",
+    "vite-plugin-dts": "^3.9.1",
+    "vitest": "^1.6.0"
+  }
+}

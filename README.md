@@ -1,1 +1,69 @@
-# create-maze
+# maze-builder
+
+Framework-agnostic, pure TypeScript maze generation library. Zero runtime dependencies. Dual ESM/CJS output with `.d.ts` declarations.
+
+## Installation
+
+```sh
+npm install maze-builder
+# or
+yarn add maze-builder
+```
+
+## Quick Start
+
+```ts
+import { generateMaze, Algorithm } from 'maze-builder';
+
+// 10×10 maze using DFS — returns a (2H+1)×(2W+1) numeric matrix
+// 0 = wall, 1 = passage
+const maze = generateMaze({ width: 10, height: 10, algorithm: Algorithm.DFS });
+
+// Reproducible output with a seed
+const seeded = generateMaze({ width: 10, height: 10, algorithm: Algorithm.DFS, seed: 42 });
+
+// Graph adjacency-list format
+import { Format } from 'maze-builder';
+const graph = generateMaze({ width: 5, height: 5, algorithm: Algorithm.PRIMS, format: Format.GRAPH });
+// graph[0] → { id: 0, x: 0, y: 0, neighbors: [1, 5, ...] }
+```
+
+## API
+
+### `generateMaze(config: MazeConfig): MazeMatrix | MazeGraph`
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `width` | `number` | ✓ | Cells wide (positive integer) |
+| `height` | `number` | ✓ | Cells tall (positive integer) |
+| `algorithm` | `Algorithm` | ✓ | Generation algorithm |
+| `format` | `Format` | — | Output format (default: `MATRIX`) |
+| `seed` | `number` | — | PRNG seed for reproducibility |
+
+### Algorithms
+
+| Value | Description | Time | Space |
+|-------|-------------|------|-------|
+| `Algorithm.DFS` | Iterative Depth-First Search (Recursive Backtracker) | O(W×H) | O(W×H) |
+| `Algorithm.PRIMS` | Randomised Prim's | O(W×H) | O(W×H) |
+| `Algorithm.KRUSKALS` | Randomised Kruskal's (Union-Find) | O(W×H·α(W×H)) | O(W×H) |
+
+### Output Formats
+
+- **`Format.MATRIX`** (default) — `number[][]` grid of size `(2H+1)×(2W+1)`. `0` = wall, `1` = passage. Entry opens at `grid[1][0]`; exit at `grid[2H-1][2W]`.
+- **`Format.GRAPH`** — `GraphNode[]` adjacency list. Each node: `{ id, x, y, neighbors }`.
+
+## Development
+
+```sh
+yarn install        # install dev dependencies
+yarn test           # vitest watch mode
+yarn test:run       # single test run (54 tests)
+yarn test:coverage  # coverage report
+yarn typecheck      # tsc --noEmit
+yarn build          # Vite library build → dist/
+```
+
+## License
+
+MIT
