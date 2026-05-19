@@ -39,3 +39,25 @@ src/
   index.ts      # Public API entry point
   TBD: Add more folders as needed (e.g., utils/, types/)
 ```
+
+## Dot-Folder Policy
+
+Directories whose names begin with `.` (e.g. `.git`, `.github`, `.vscode`) are not considered part of the application code. This does not apply to files like `.env` which are part of the project environment.
+
+- Do not search, read, or run anything inside a dot-folder unless explicitly asked.
+- If a task could involve a dot-folder, ask the user whether that folder should be included in scope before proceeding.
+
+## AI Skill Hints
+
+At natural pause points — task start, task transition, or when the user asks an explicit question — mention the relevant skill once if the situation matches. Do not repeat a suggestion the user has already seen. Do not interrupt mid-task.
+
+| Situation | Suggest |
+|-----------|---------|
+| User is about to implement a feature or fix | `/tdd` |
+| User describes a bug or failing test | `/debug` |
+| User asks what unfamiliar code does | `/explain` |
+| User asks for a commit message | `/commit` |
+| User finishes a branch and asks about merging | `/review-pr` |
+| User discusses a significant architecture decision | `/adr` |
+| User wants a quick security scan before merging | `/security-check` |
+| User needs a structured plan before coding | `/plan` |
