@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>maze-builder demo</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: system-ui, sans-serif;
+        background: #0f0f14;
+        color: #e0dcd6;
+        min-height: 100vh;
+        padding: 2rem 1.5rem 3rem;
+      }
+
+      header {
+        margin-bottom: 2.5rem;
+      }
+
+      header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #f5f0ea;
+      }
+
+      header p {
+        margin-top: 0.4rem;
+        font-size: 0.9rem;
+        color: #888;
+      }
+
+      .grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+      }
+
+      .card {
+        background: #1a1a24;
+        border: 1px solid #2a2a38;
+        border-radius: 10px;
+        padding: 1.25rem 1.5rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .card h2 {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #f0ede8;
+      }
+
+      .card p {
+        font-size: 0.8rem;
+        color: #777;
+        line-height: 1.5;
+        max-width: 340px;
+      }
+
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .controls label {
+        font-size: 0.8rem;
+        color: #999;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .controls input[type="number"] {
+        width: 56px;
+        padding: 0.25rem 0.4rem;
+        background: #0f0f14;
+        border: 1px solid #333;
+        border-radius: 4px;
+        color: #e0dcd6;
+        font-size: 0.85rem;
+        text-align: center;
+        -moz-appearance: textfield;
+      }
+
+      .controls input[type="number"]::-webkit-inner-spin-button,
+      .controls input[type="number"]::-webkit-outer-spin-button {
+        opacity: 0.3;
+      }
+
+      .controls button {
+        padding: 0.3rem 0.9rem;
+        background: #2e2e44;
+        border: 1px solid #44446a;
+        border-radius: 5px;
+        color: #c8c4f0;
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+      }
+
+      .controls button:hover {
+        background: #3a3a5a;
+        border-color: #6666aa;
+      }
+
+      .maze-wrap {
+        overflow: auto;
+      }
+
+      .maze {
+        display: grid;
+        width: fit-content;
+        gap: 0;
+        line-height: 0;
+      }
+
+      .maze .wall { background: #1e1e2e; }
+      .maze .path { background: #f0ede8; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>maze-builder</h1>
+      <p>All three generation algorithms — DFS, Prim's, Kruskal's — rendered as a CSS Grid.</p>
+    </header>
+
+    <div class="grid">
+      <section class="card" data-algo="dfs">
+        <h2>Depth-First Search</h2>
+        <p>Iterative recursive backtracker. Produces long, winding corridors with few dead ends. O(W×H) time and space.</p>
+        <div class="controls">
+          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="maze-wrap"><div class="maze"></div></div>
+      </section>
+
+      <section class="card" data-algo="prims">
+        <h2>Prim's Algorithm</h2>
+        <p>Randomised Prim's — grows from a seed cell by randomly picking frontier walls. Produces more branchy, uniform mazes. O(W×H) average.</p>
+        <div class="controls">
+          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="maze-wrap"><div class="maze"></div></div>
+      </section>
+
+      <section class="card" data-algo="kruskals">
+        <h2>Kruskal's Algorithm</h2>
+        <p>Randomised Kruskal's — shuffles all internal walls and merges disjoint sets. Produces uniformly random spanning trees. O(W×H · α(W×H)) time.</p>
+        <div class="controls">
+          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="maze-wrap"><div class="maze"></div></div>
+      </section>
+    </div>
+
+    <script type="module" src="/demo.ts"></script>
+  </body>
+</html>
