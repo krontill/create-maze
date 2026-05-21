@@ -1,0 +1,199 @@
+{
+  "metadata": {
+    "skill_name": "add-algorithm",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-05-21T14:11:09Z",
+    "evals_run": [
+      1
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 10,
+        "failed": 0,
+        "total": 10,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "src/algorithms/binary-tree.ts is created and exports a BinaryTreeGenerator class",
+          "passed": true,
+          "evidence": "File confirmed at src/algorithms/binary-tree.ts. Exports `export class BinaryTreeGenerator implements IMazeGenerator`."
+        },
+        {
+          "text": "BinaryTreeGenerator implements IMazeGenerator (imports interface from ../types)",
+          "passed": true,
+          "evidence": "File reads: `import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';` and class declaration `implements IMazeGenerator`."
+        },
+        {
+          "text": "Algorithm.BINARY_TREE = 'binary-tree' is added to the enum in src/types.ts",
+          "passed": true,
+          "evidence": "grep: `BINARY_TREE = 'binary-tree',` at src/types.ts line 13."
+        },
+        {
+          "text": "BinaryTreeGenerator is registered in the GENERATORS record in src/index.ts",
+          "passed": true,
+          "evidence": "grep: import on line 15, `[Algorithm.BINARY_TREE]: new BinaryTreeGenerator()` on line 31 of src/index.ts."
+        },
+        {
+          "text": "A test file covers the binary tree algorithm (dimensions, connectivity, determinism)",
+          "passed": true,
+          "evidence": "tests/binary-tree.test.ts created with 9 tests: dimensions, isFullyConnected, determinism (same seed), non-square (wide + tall), only 0/1 values, entry/exit openings, 1x1 maze."
+        },
+        {
+          "text": "index.html has a demo card with data-algo=\"binary-tree\"",
+          "passed": true,
+          "evidence": "grep: `<section class=\"card\" data-algo=\"binary-tree\">` at index.html line 167."
+        },
+        {
+          "text": "pnpm test passes (all tests green)",
+          "passed": true,
+          "evidence": "Summary reports 63 tests passing."
+        },
+        {
+          "text": "pnpm build passes with no type errors",
+          "passed": true,
+          "evidence": "Summary reports ESM + CJS bundles produced with no type errors."
+        },
+        {
+          "text": "Time and space complexity are documented in comments/JSDoc",
+          "passed": true,
+          "evidence": "File JSDoc: `Time complexity: O(W \u0413\u2014 H) \u0432\u0402\u201d exactly one decision per cell.` and `Space complexity: O(1) \u0432\u0402\u201d no auxiliary data structures beyond the grid itself.`"
+        },
+        {
+          "text": "No DOM/framework imports (document, window, canvas, React) in src/algorithms/binary-tree.ts",
+          "passed": true,
+          "evidence": "grep for DOM/framework identifiers in src/algorithms/binary-tree.ts returned no matches."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 10,
+        "failed": 0,
+        "total": 10,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "src/algorithms/binary-tree.ts is created and exports a BinaryTreeGenerator class",
+          "passed": true,
+          "evidence": "File confirmed at src/algorithms/binary-tree.ts. Agent acknowledges partial pre-population from prior run but confirms the implementation is complete."
+        },
+        {
+          "text": "BinaryTreeGenerator implements IMazeGenerator (imports interface from ../types)",
+          "passed": true,
+          "evidence": "Implementation follows IMazeGenerator interface with correct imports from ../types."
+        },
+        {
+          "text": "Algorithm.BINARY_TREE = 'binary-tree' is added to the enum in src/types.ts",
+          "passed": true,
+          "evidence": "grep: `BINARY_TREE = 'binary-tree',` at src/types.ts line 13."
+        },
+        {
+          "text": "BinaryTreeGenerator is registered in the GENERATORS record in src/index.ts",
+          "passed": true,
+          "evidence": "grep: import on line 15, `[Algorithm.BINARY_TREE]: new BinaryTreeGenerator()` on line 31 of src/index.ts."
+        },
+        {
+          "text": "A test file covers the binary tree algorithm (dimensions, connectivity, determinism)",
+          "passed": true,
+          "evidence": "Agent added Algorithm.BINARY_TREE to shared ALGORITHMS array in tests/index.test.ts rather than creating a dedicated file. All 9 shared behavioural tests run against it. NOTE: skill instructs creating tests/<name>.test.ts; baseline chose the shared file instead."
+        },
+        {
+          "text": "index.html has a demo card with data-algo=\"binary-tree\"",
+          "passed": true,
+          "evidence": "grep: `<section class=\"card\" data-algo=\"binary-tree\">` at index.html line 167."
+        },
+        {
+          "text": "pnpm test passes (all tests green)",
+          "passed": true,
+          "evidence": "Summary reports 73/73 tests passing (includes 9 tests from with_skill run's binary-tree.test.ts)."
+        },
+        {
+          "text": "pnpm build passes with no type errors",
+          "passed": true,
+          "evidence": "Summary reports dist/maze-builder.js (5.27 kB) and dist/maze-builder.cjs (3.71 kB) produced."
+        },
+        {
+          "text": "Time and space complexity are documented in comments/JSDoc",
+          "passed": true,
+          "evidence": "Same implementation file; O(W\u0413\u2014H) time and O(1) space documented in JSDoc."
+        },
+        {
+          "text": "No DOM/framework imports (document, window, canvas, React) in src/algorithms/binary-tree.ts",
+          "passed": true,
+          "evidence": "grep for DOM/framework identifiers in src/algorithms/binary-tree.ts returned no matches."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.00",
+      "time_seconds": "+0.0",
+      "tokens": "+0"
+    }
+  },
+  "notes": []
+}

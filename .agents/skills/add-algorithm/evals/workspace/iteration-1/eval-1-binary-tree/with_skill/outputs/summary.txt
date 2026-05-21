@@ -1,0 +1,85 @@
+## Summary: Binary Tree Algorithm — add-algorithm eval
+
+### Files Created or Modified
+
+CREATED:
+  src/algorithms/binary-tree.ts
+    — Implements BinaryTreeGenerator (IMazeGenerator).
+    — Row-major scan, carves north or east randomly per cell.
+    — Top-right corner handled as a no-op (createGrid provides entry/exit).
+
+  tests/binary-tree.test.ts
+    — 9 test cases: dimensions, full connectivity, determinism, non-square (wide + tall),
+      only 0/1 values, entry/exit openings, 1×1 maze, different seeds produce different output.
+
+MODIFIED:
+  src/types.ts
+    — Added: BINARY_TREE = 'binary-tree' to the Algorithm enum.
+
+  src/index.ts
+    — Added import: BinaryTreeGenerator from './algorithms/binary-tree'.
+    — Added entry [Algorithm.BINARY_TREE]: new BinaryTreeGenerator() to the GENERATORS record.
+
+  index.html
+    — Added a <section class="card" data-algo="binary-tree"> card after the Kruskal's card.
+
+---
+
+### Key Implementation Decisions
+
+1. Row-major traversal (r=0..height-1, c=0..width-1): processes cells sequentially,
+   making the north/east decision purely local — O(1) per cell.
+
+2. Direction priority: both north (r-1) and east (c+1) are checked per cell.
+   When both are in-bounds, random() < 0.5 picks between them.
+   When only one is in-bounds, that direction is used deterministically.
+   Top-right corner (r=0, c=width-1): no valid neighbour; cell is marked but no passage
+   is carved. The entry/exit openings from createGrid ensure the 1×1 edge case works.
+
+3. No auxiliary data structures: unlike DFS or Prim's, Binary Tree needs no visited
+   array or stack — pure O(1) extra space beyond the grid.
+
+4. PRNG: createRandom(seed) used for reproducibility; same seed always produces the
+   same maze (verified by determinism test).
+
+5. Algorithm characteristic: produces a strong diagonal bias — the top row is always a
+   single horizontal corridor (all east carvings) and the right column is always a
+   single vertical corridor (all north carvings). The description in the demo card
+   calls this out explicitly.
+
+---
+
+### pnpm test output (pass/fail)
+
+PASS — 5 test files, 63 tests total (including 9 new BinaryTree tests).
+Duration: ~437 ms.
+
+All suites:
+  ✓ tests/binary-tree.test.ts      (9 tests)
+  ✓ tests/index.test.ts            (shared behavioural tests, now covers BINARY_TREE too)
+  ✓ tests/utils/graph.test.ts
+  ✓ tests/utils/grid.test.ts
+  ✓ tests/utils/random.test.ts
+
+---
+
+### pnpm build output (pass/fail)
+
+PASS — Built 10 modules in ~427 ms.
+Output:
+  dist/maze-builder.js   5.27 kB  (ESM)
+  dist/maze-builder.cjs  3.71 kB  (CJS)
+  TypeScript declaration files generated with no type errors.
+
+---
+
+### Problems Encountered
+
+None. The skill file instructions were complete and unambiguous:
+- Enum registration, file creation, public API wiring, tests, and demo card all
+  followed the patterns described in the skill.
+- `pnpm` was not available in the subagent environment; `npm` was used instead
+  with identical results.
+- The shared behavioural test loop in tests/index.test.ts automatically picks up
+  Algorithm.BINARY_TREE because it iterates Object.values(Algorithm), so no
+  changes to that file were needed.

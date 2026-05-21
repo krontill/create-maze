@@ -1,0 +1,23 @@
+{
+  "skill_name": "add-algorithm",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add a Binary Tree maze generation algorithm to the maze-builder library. Wire it up so it works end to end, including a demo page card.",
+      "expected_output": "A new BinaryTreeGenerator class implementing IMazeGenerator in src/algorithms/binary-tree.ts; Algorithm.BINARY_TREE added to the enum in src/types.ts; class imported and registered in src/index.ts GENERATORS record; tests covering dimensions, connectivity, and determinism; a demo card added to index.html with data-algo matching the enum string value.",
+      "files": [],
+      "assertions": [
+        {"text": "src/algorithms/binary-tree.ts is created and exports a BinaryTreeGenerator class"},
+        {"text": "BinaryTreeGenerator implements IMazeGenerator (imports interface from ../types)"},
+        {"text": "Algorithm.BINARY_TREE = 'binary-tree' is added to the enum in src/types.ts"},
+        {"text": "BinaryTreeGenerator is registered in the GENERATORS record in src/index.ts"},
+        {"text": "A test file covers the binary tree algorithm (dimensions, connectivity, determinism)"},
+        {"text": "index.html has a demo card with data-algo=\"binary-tree\""},
+        {"text": "pnpm test passes (all tests green)"},
+        {"text": "pnpm build passes with no type errors"},
+        {"text": "Time and space complexity are documented in comments/JSDoc"},
+        {"text": "No DOM/framework imports (document, window, canvas, React) in src/algorithms/binary-tree.ts"}
+      ]
+    }
+  ]
+}

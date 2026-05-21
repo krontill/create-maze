@@ -12,6 +12,7 @@ import type { MazeConfig, MazeMatrix, MazeGraph, IMazeGenerator } from './types'
 import { DFSGenerator } from './algorithms/dfs';
 import { PrimsGenerator } from './algorithms/prims';
 import { KruskalsGenerator } from './algorithms/kruskals';
+import { BinaryTreeGenerator } from './algorithms/binary-tree';
 import { matrixToGraph } from './utils/graph';
 
 // Re-export enums (values) and types (types only)
@@ -27,6 +28,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.DFS]: new DFSGenerator(),
   [Algorithm.PRIMS]: new PrimsGenerator(),
   [Algorithm.KRUSKALS]: new KruskalsGenerator(),
+  [Algorithm.BINARY_TREE]: new BinaryTreeGenerator(),
 };
 
 // ---------------------------------------------------------------------------

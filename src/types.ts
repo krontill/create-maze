@@ -10,6 +10,7 @@ export enum Algorithm {
   DFS = 'dfs',
   PRIMS = 'prims',
   KRUSKALS = 'kruskals',
+  BINARY_TREE = 'binary-tree',
 }
 
 /** Supported output formats. */

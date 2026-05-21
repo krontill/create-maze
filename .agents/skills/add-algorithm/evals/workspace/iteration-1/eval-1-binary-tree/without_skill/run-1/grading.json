@@ -1,0 +1,62 @@
+{
+  "run": "without_skill",
+  "eval_name": "binary-tree-end-to-end",
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 10,
+    "failed": 0,
+    "total": 10
+  },
+  "expectations": [
+    {
+      "text": "src/algorithms/binary-tree.ts is created and exports a BinaryTreeGenerator class",
+      "passed": true,
+      "evidence": "File confirmed at src/algorithms/binary-tree.ts. Agent acknowledges partial pre-population from prior run but confirms the implementation is complete."
+    },
+    {
+      "text": "BinaryTreeGenerator implements IMazeGenerator (imports interface from ../types)",
+      "passed": true,
+      "evidence": "Implementation follows IMazeGenerator interface with correct imports from ../types."
+    },
+    {
+      "text": "Algorithm.BINARY_TREE = 'binary-tree' is added to the enum in src/types.ts",
+      "passed": true,
+      "evidence": "grep: `BINARY_TREE = 'binary-tree',` at src/types.ts line 13."
+    },
+    {
+      "text": "BinaryTreeGenerator is registered in the GENERATORS record in src/index.ts",
+      "passed": true,
+      "evidence": "grep: import on line 15, `[Algorithm.BINARY_TREE]: new BinaryTreeGenerator()` on line 31 of src/index.ts."
+    },
+    {
+      "text": "A test file covers the binary tree algorithm (dimensions, connectivity, determinism)",
+      "passed": true,
+      "evidence": "Agent added Algorithm.BINARY_TREE to shared ALGORITHMS array in tests/index.test.ts rather than creating a dedicated file. All 9 shared behavioural tests run against it. NOTE: skill instructs creating tests/<name>.test.ts; baseline chose the shared file instead."
+    },
+    {
+      "text": "index.html has a demo card with data-algo=\"binary-tree\"",
+      "passed": true,
+      "evidence": "grep: `<section class=\"card\" data-algo=\"binary-tree\">` at index.html line 167."
+    },
+    {
+      "text": "pnpm test passes (all tests green)",
+      "passed": true,
+      "evidence": "Summary reports 73/73 tests passing (includes 9 tests from with_skill run's binary-tree.test.ts)."
+    },
+    {
+      "text": "pnpm build passes with no type errors",
+      "passed": true,
+      "evidence": "Summary reports dist/maze-builder.js (5.27 kB) and dist/maze-builder.cjs (3.71 kB) produced."
+    },
+    {
+      "text": "Time and space complexity are documented in comments/JSDoc",
+      "passed": true,
+      "evidence": "Same implementation file; O(W×H) time and O(1) space documented in JSDoc."
+    },
+    {
+      "text": "No DOM/framework imports (document, window, canvas, React) in src/algorithms/binary-tree.ts",
+      "passed": true,
+      "evidence": "grep for DOM/framework identifiers in src/algorithms/binary-tree.ts returned no matches."
+    }
+  ]
+}

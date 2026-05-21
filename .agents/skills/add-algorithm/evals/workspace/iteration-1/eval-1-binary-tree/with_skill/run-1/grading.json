@@ -1,0 +1,62 @@
+{
+  "run": "with_skill",
+  "eval_name": "binary-tree-end-to-end",
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 10,
+    "failed": 0,
+    "total": 10
+  },
+  "expectations": [
+    {
+      "text": "src/algorithms/binary-tree.ts is created and exports a BinaryTreeGenerator class",
+      "passed": true,
+      "evidence": "File confirmed at src/algorithms/binary-tree.ts. Exports `export class BinaryTreeGenerator implements IMazeGenerator`."
+    },
+    {
+      "text": "BinaryTreeGenerator implements IMazeGenerator (imports interface from ../types)",
+      "passed": true,
+      "evidence": "File reads: `import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';` and class declaration `implements IMazeGenerator`."
+    },
+    {
+      "text": "Algorithm.BINARY_TREE = 'binary-tree' is added to the enum in src/types.ts",
+      "passed": true,
+      "evidence": "grep: `BINARY_TREE = 'binary-tree',` at src/types.ts line 13."
+    },
+    {
+      "text": "BinaryTreeGenerator is registered in the GENERATORS record in src/index.ts",
+      "passed": true,
+      "evidence": "grep: import on line 15, `[Algorithm.BINARY_TREE]: new BinaryTreeGenerator()` on line 31 of src/index.ts."
+    },
+    {
+      "text": "A test file covers the binary tree algorithm (dimensions, connectivity, determinism)",
+      "passed": true,
+      "evidence": "tests/binary-tree.test.ts created with 9 tests: dimensions, isFullyConnected, determinism (same seed), non-square (wide + tall), only 0/1 values, entry/exit openings, 1x1 maze."
+    },
+    {
+      "text": "index.html has a demo card with data-algo=\"binary-tree\"",
+      "passed": true,
+      "evidence": "grep: `<section class=\"card\" data-algo=\"binary-tree\">` at index.html line 167."
+    },
+    {
+      "text": "pnpm test passes (all tests green)",
+      "passed": true,
+      "evidence": "Summary reports 63 tests passing."
+    },
+    {
+      "text": "pnpm build passes with no type errors",
+      "passed": true,
+      "evidence": "Summary reports ESM + CJS bundles produced with no type errors."
+    },
+    {
+      "text": "Time and space complexity are documented in comments/JSDoc",
+      "passed": true,
+      "evidence": "File JSDoc: `Time complexity: O(W × H) — exactly one decision per cell.` and `Space complexity: O(1) — no auxiliary data structures beyond the grid itself.`"
+    },
+    {
+      "text": "No DOM/framework imports (document, window, canvas, React) in src/algorithms/binary-tree.ts",
+      "passed": true,
+      "evidence": "grep for DOM/framework identifiers in src/algorithms/binary-tree.ts returned no matches."
+    }
+  ]
+}

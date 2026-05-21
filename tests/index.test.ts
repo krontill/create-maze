@@ -6,7 +6,7 @@ import { isFullyConnected } from './helpers';
 // Shared behavioural tests run against every algorithm
 // ---------------------------------------------------------------------------
 
-const ALGORITHMS: Algorithm[] = [Algorithm.DFS, Algorithm.PRIMS, Algorithm.KRUSKALS];
+const ALGORITHMS: Algorithm[] = [Algorithm.DFS, Algorithm.PRIMS, Algorithm.KRUSKALS, Algorithm.BINARY_TREE];
 
 for (const algorithm of ALGORITHMS) {
   describe(`generateMaze – ${algorithm}`, () => {

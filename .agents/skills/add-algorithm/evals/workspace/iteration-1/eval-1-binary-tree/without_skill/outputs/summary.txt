@@ -1,0 +1,80 @@
+## Binary Tree Algorithm — Implementation Summary (without skill)
+
+### Files Created or Modified
+
+**Modified:**
+- `src/types.ts`              — Added `BINARY_TREE = 'binary-tree'` to the Algorithm enum.
+- `src/index.ts`              — Imported BinaryTreeGenerator and registered it in the GENERATORS map.
+- `tests/index.test.ts`       — Added `Algorithm.BINARY_TREE` to the shared ALGORITHMS array so all 9 shared behavioural tests run against it.
+- `index.html`                — Added a fourth demo card with `data-algo="binary-tree"`.
+
+**Created:**
+- `src/algorithms/binary-tree.ts` — Full implementation of the Binary Tree generator.
+
+(Note: `types.ts`, `src/index.ts`, `index.html`, and `src/algorithms/binary-tree.ts` were partially pre-populated from a prior session; only `tests/index.test.ts` required a net-new change in this run.)
+
+---
+
+### Key Implementation Decisions
+
+1. **Algorithm choice — north/east bias**
+   The canonical Binary Tree algorithm picks randomly between two directions for each cell. North and east were chosen so the top row and right column become fully-open corridors — the distinctive visual signature of the algorithm.
+
+2. **Edge-case handling**
+   - Top row cells (r = 0): can only carve east.
+   - Rightmost column cells (c = width-1): can only carve north.
+   - Top-right corner (r=0, c=width-1): no valid neighbour; cell is marked as a passage but no extra carving is needed (the entry/exit openings from `createGrid` maintain connectivity for 1-cell edge cases).
+
+3. **O(1) auxiliary space**
+   Unlike DFS (stack) or Prim's (frontier set) or Kruskal's (union-find), Binary Tree needs no auxiliary data structure beyond the output grid, making its space complexity truly O(1) — the smallest of all four algorithms.
+
+4. **Strategy pattern**
+   `BinaryTreeGenerator` implements `IMazeGenerator` (the same interface as the other three algorithms) and is registered in the `GENERATORS` map in `src/index.ts`.  The public `generateMaze()` API required no changes.
+
+5. **Determinism via seeded PRNG**
+   Uses the existing `createRandom(seed)` utility so the same seed always produces an identical maze.
+
+6. **Tests**
+   Added `Algorithm.BINARY_TREE` to the shared `ALGORITHMS` array in `tests/index.test.ts`. All 9 shared behavioural tests (correct dimensions, only 0s/1s, open entry/exit, fully connected, deterministic, different seeds differ, 1×1, 1×N, N×1, graph format) are exercised against Binary Tree automatically.
+
+---
+
+### pnpm test output
+
+```
+ RUN  v4.1.6 D:/i/maze-builder
+
+ ✓ tests/utils/random.test.ts   (7 tests)   11ms
+ ✓ tests/utils/grid.test.ts     (7 tests)    9ms
+ ✓ tests/utils/graph.test.ts    (4 tests)    8ms
+ ✓ tests/binary-tree.test.ts    (9 tests)   12ms
+ ✓ tests/index.test.ts         (46 tests)   25ms
+
+ Test Files  5 passed (5)
+      Tests  73 passed (73)
+   Duration  412ms
+```
+
+**Result: PASS**
+
+---
+
+### pnpm build output
+
+```
+vite v8.0.13 building client environment for production...
+✓ 10 modules transformed.
+[unplugin:dts] Declaration files built in 360ms.
+dist/maze-builder.js   5.27 kB │ gzip: 1.94 kB
+dist/maze-builder.cjs  3.71 kB │ gzip: 1.66 kB
+✓ built in 430ms
+```
+
+**Result: PASS**
+
+---
+
+### Problems Encountered
+
+- `pnpm` is not installed in this environment; `npm run <script>` was used instead — functionally identical.
+- Several files (`types.ts`, `src/index.ts`, `index.html`, `src/algorithms/binary-tree.ts`) had already been partially filled from a prior session; the only file requiring a change was `tests/index.test.ts` (adding `Algorithm.BINARY_TREE` to the shared test array).

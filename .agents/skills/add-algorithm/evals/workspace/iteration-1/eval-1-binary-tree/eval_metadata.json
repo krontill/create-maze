@@ -1,0 +1,57 @@
+{
+  "eval_id": 1,
+  "eval_name": "binary-tree-end-to-end",
+  "prompt": "Add a Binary Tree maze generation algorithm to the maze-builder library. Wire it up so it works end to end, including a demo page card.",
+  "assertions": [
+    {
+      "text": "src/algorithms/binary-tree.ts is created and exports a BinaryTreeGenerator class",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "BinaryTreeGenerator implements IMazeGenerator (imports interface from ../types)",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "Algorithm.BINARY_TREE = 'binary-tree' is added to the enum in src/types.ts",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "BinaryTreeGenerator is registered in the GENERATORS record in src/index.ts",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "A test file covers the binary tree algorithm (dimensions, connectivity, determinism)",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "index.html has a demo card with data-algo=\"binary-tree\"",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "pnpm test passes (all tests green)",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "pnpm build passes with no type errors",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "Time and space complexity are documented in comments/JSDoc",
+      "passed": null,
+      "evidence": ""
+    },
+    {
+      "text": "No DOM/framework imports (document, window, canvas, React) in src/algorithms/binary-tree.ts",
+      "passed": null,
+      "evidence": ""
+    }
+  ]
+}

@@ -163,6 +163,17 @@
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
       </section>
+
+      <section class="card" data-algo="binary-tree">
+        <h2>Binary Tree</h2>
+        <p>Processes every cell once, carving north or east at random. Produces a strong diagonal bias toward the top-right. O(W×H) time, O(1) extra space.</p>
+        <div class="controls">
+          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="maze-wrap"><div class="maze"></div></div>
+      </section>
     </div>
 
     <script type="module" src="/demo.ts"></script>
