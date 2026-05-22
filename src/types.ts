@@ -11,6 +11,7 @@ export enum Algorithm {
   PRIMS = 'prims',
   KRUSKALS = 'kruskals',
   BINARY_TREE = 'binary-tree',
+  WILSONS = 'wilsons',
 }
 
 /** Supported output formats. */
