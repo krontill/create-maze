@@ -12,6 +12,7 @@ export enum Algorithm {
   KRUSKALS = 'kruskals',
   BINARY_TREE = 'binary-tree',
   WILSONS = 'wilsons',
+  ALDOUS_BRODER = 'aldous-broder',
 }
 
 /** Supported output formats. */

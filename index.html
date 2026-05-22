@@ -185,6 +185,16 @@
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
       </section>
+      <section class="card" data-algo="aldous-broder">
+        <h2>Aldous-Broder</h2>
+        <p>Uniform random walk over the grid — walls are removed only on the first visit to each cell. Produces a uniform spanning tree with no bias. Simple but slow: O(W×H·log(W×H)) expected time.</p>
+        <div class="controls">
+          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="maze-wrap"><div class="maze"></div></div>
+      </section>
     </div>
 
     <script type="module" src="/demo.ts"></script>
