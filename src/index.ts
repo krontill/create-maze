@@ -16,6 +16,7 @@ import { BinaryTreeGenerator } from './algorithms/binary-tree';
 import { WilsonsGenerator } from './algorithms/wilsons';
 import { AldousBroderGenerator } from './algorithms/aldous-broder';
 import { EllersGenerator } from './algorithms/ellers';
+import { SidewinderGenerator } from './algorithms/sidewinder';
 import { matrixToGraph } from './utils/graph';
 
 // Re-export enums (values) and types (types only)
@@ -35,6 +36,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.WILSONS]: new WilsonsGenerator(),
   [Algorithm.ALDOUS_BRODER]: new AldousBroderGenerator(),
   [Algorithm.ELLERS]: new EllersGenerator(),
+  [Algorithm.SIDEWINDER]: new SidewinderGenerator(),
 };
 
 // ---------------------------------------------------------------------------

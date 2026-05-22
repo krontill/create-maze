@@ -205,6 +205,16 @@
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
       </section>
+      <section class="card" data-algo="sidewinder">
+        <h2>Sidewinder</h2>
+        <p>Processes each row left to right, collecting cells into a run. Each step either extends the run east or closes it by carving north from a random run member. The top row is always open east. O(W×H) time, O(W) space.</p>
+        <div class="controls">
+          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="maze-wrap"><div class="maze"></div></div>
+      </section>
     </div>
 
     <script type="module" src="/demo.ts"></script>

@@ -14,6 +14,7 @@ export enum Algorithm {
   WILSONS = 'wilsons',
   ALDOUS_BRODER = 'aldous-broder',
   ELLERS = 'ellers',
+  SIDEWINDER = 'sidewinder',
 }
 
 /** Supported output formats. */
