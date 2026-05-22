@@ -13,7 +13,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid } from '../utils/grid';
+import { createGrid, markCell, carvePassage } from '../utils/grid';
 import { createRandom, shuffle } from '../utils/random';
 
 // ---------------------------------------------------------------------------
@@ -113,7 +113,7 @@ export class KruskalsGenerator implements IMazeGenerator {
 
     for (let r = 0; r < height; r++) {
       for (let c = 0; c < width; c++) {
-        grid[2 * r + 1][2 * c + 1] = 1; // mark cell as passage
+        markCell(grid, r, c);
 
         // Right neighbour edge
         if (c + 1 < width) {
@@ -134,10 +134,7 @@ export class KruskalsGenerator implements IMazeGenerator {
       const id2 = row2 * width + col2;
 
       if (union(dsu, id1, id2)) {
-        // Open the wall between (row1, col1) and (row2, col2)
-        const wallRow = row1 + row2 + 1;
-        const wallCol = col1 + col2 + 1;
-        grid[wallRow][wallCol] = 1;
+        carvePassage(grid, row1, col1, row2, col2);
       }
     }
 
