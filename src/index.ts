@@ -15,6 +15,7 @@ import { KruskalsGenerator } from './algorithms/kruskals';
 import { BinaryTreeGenerator } from './algorithms/binary-tree';
 import { WilsonsGenerator } from './algorithms/wilsons';
 import { AldousBroderGenerator } from './algorithms/aldous-broder';
+import { EllersGenerator } from './algorithms/ellers';
 import { matrixToGraph } from './utils/graph';
 
 // Re-export enums (values) and types (types only)
@@ -33,6 +34,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.BINARY_TREE]: new BinaryTreeGenerator(),
   [Algorithm.WILSONS]: new WilsonsGenerator(),
   [Algorithm.ALDOUS_BRODER]: new AldousBroderGenerator(),
+  [Algorithm.ELLERS]: new EllersGenerator(),
 };
 
 // ---------------------------------------------------------------------------

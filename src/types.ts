@@ -13,6 +13,7 @@ export enum Algorithm {
   BINARY_TREE = 'binary-tree',
   WILSONS = 'wilsons',
   ALDOUS_BRODER = 'aldous-broder',
+  ELLERS = 'ellers',
 }
 
 /** Supported output formats. */

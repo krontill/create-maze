@@ -195,6 +195,16 @@
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
       </section>
+      <section class="card" data-algo="ellers">
+        <h2>Eller's Algorithm</h2>
+        <p>Builds the maze one row at a time using disjoint sets. Merges adjacent cells of different sets horizontally, then carves at least one downward passage per set. Produces a perfect maze in O(W×H) time with only O(W) space.</p>
+        <div class="controls">
+          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="maze-wrap"><div class="maze"></div></div>
+      </section>
     </div>
 
     <script type="module" src="/demo.ts"></script>
