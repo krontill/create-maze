@@ -17,6 +17,7 @@ import { WilsonsGenerator } from './algorithms/wilsons';
 import { AldousBroderGenerator } from './algorithms/aldous-broder';
 import { EllersGenerator } from './algorithms/ellers';
 import { SidewinderGenerator } from './algorithms/sidewinder';
+import { HuntAndKillGenerator } from './algorithms/hunt-and-kill';
 import { matrixToGraph } from './utils/graph';
 
 // Re-export enums (values) and types (types only)
@@ -37,6 +38,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.ALDOUS_BRODER]: new AldousBroderGenerator(),
   [Algorithm.ELLERS]: new EllersGenerator(),
   [Algorithm.SIDEWINDER]: new SidewinderGenerator(),
+  [Algorithm.HUNT_AND_KILL]: new HuntAndKillGenerator(),
 };
 
 // ---------------------------------------------------------------------------

@@ -15,6 +15,7 @@ export enum Algorithm {
   ALDOUS_BRODER = 'aldous-broder',
   ELLERS = 'ellers',
   SIDEWINDER = 'sidewinder',
+  HUNT_AND_KILL = 'hunt-and-kill',
 }
 
 /** Supported output formats. */
