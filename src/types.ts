@@ -18,6 +18,7 @@ export enum Algorithm {
   HUNT_AND_KILL = 'hunt-and-kill',
   RECURSIVE_DIVISION = 'recursive-division',
   GROWING_TREE = 'growing-tree',
+  HOUSTONS = 'houstons',
 }
 
 /** Supported output formats. */
