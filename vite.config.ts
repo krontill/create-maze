@@ -3,7 +3,10 @@ import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
 
 export default defineConfig({
+  root: 'sandbox',
   build: {
+    outDir: resolve('dist'),
+    emptyOutDir: true,
     lib: {
       entry: resolve('src/index.ts'),
       name: 'MazeBuilder',
@@ -18,9 +21,11 @@ export default defineConfig({
     dts({
       include: ['src/**/*.ts'],
       insertTypesEntry: true,
+      outDirs: resolve('dist'),
     }),
   ],
   test: {
+    root: resolve('.'),
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

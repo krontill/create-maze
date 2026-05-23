@@ -1,5 +1,5 @@
-import { generateMaze, Algorithm } from './src/index';
-import type { MazeMatrix } from './src/index';
+import { generateMaze, Algorithm } from '../src/index';
+import type { MazeMatrix } from '../src/index';
 
 const CELL_PX = 8;
 
