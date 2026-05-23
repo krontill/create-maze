@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>maze-builder — Algorithm Comparison</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: system-ui, sans-serif;
+        background: #0f0f14;
+        color: #e0dcd6;
+        min-height: 100vh;
+        padding: 2rem 1.5rem 3rem;
+      }
+
+      /* ── header ── */
+      header {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: baseline;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #f5f0ea;
+      }
+
+      header nav a {
+        font-size: 0.85rem;
+        color: #6666aa;
+        text-decoration: none;
+        border-bottom: 1px solid #6666aa44;
+        padding-bottom: 1px;
+        transition: color 0.15s, border-color 0.15s;
+      }
+
+      header nav a:hover {
+        color: #9999dd;
+        border-color: #9999dd88;
+      }
+
+      /* ── legend ── */
+      #legend-section {
+        background: #1a1a24;
+        border: 1px solid #2a2a38;
+        border-radius: 10px;
+        padding: 0.25rem 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      #legend-section h2 {
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #666;
+      }
+
+      .legend-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .legend-toggles {
+        display: flex;
+        gap: 0.35rem;
+        margin-left: auto;
+      }
+
+      .legend-toggles button {
+        padding: 0.15rem 0.55rem;
+        background: transparent;
+        border: 1px solid #333;
+        border-radius: 4px;
+        color: #888;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s;
+      }
+
+      .legend-toggles button:hover {
+        color: #c8c4f0;
+        border-color: #6666aa;
+      }
+
+      #legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem 0.5rem;
+        margin-bottom: 0.9rem;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.82rem;
+        color: #c8c4be;
+        cursor: pointer;
+        user-select: none;
+        transition: opacity 0.15s;
+      }
+
+      .legend-item:has(input:not(:checked)) {
+        opacity: 0.35;
+      }
+
+      .legend-item input[type="checkbox"] {
+        cursor: pointer;
+        width: 13px;
+        height: 13px;
+        margin: 0;
+        flex-shrink: 0;
+      }
+
+      .swatch {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        flex-shrink: 0;
+      }
+
+      /* Overlap legend item */
+      .legend-overlap {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.82rem;
+        color: #c8c4be;
+      }
+
+      .overlap-swatch {
+        width: 20px;
+        height: 14px;
+        border-radius: 3px;
+        background: #6b7280;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        color: #fff;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      /* ── controls ── */
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.5rem;
+      }
+
+      .controls label {
+        font-size: 0.8rem;
+        color: #999;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .controls input[type="number"] {
+        width: 60px;
+        padding: 0.3rem 0.4rem;
+        background: #1a1a24;
+        border: 1px solid #333;
+        border-radius: 4px;
+        color: #e0dcd6;
+        font-size: 0.85rem;
+        text-align: center;
+        -moz-appearance: textfield;
+      }
+
+      .controls input[type="number"]::-webkit-inner-spin-button,
+      .controls input[type="number"]::-webkit-outer-spin-button {
+        opacity: 0.3;
+      }
+
+      .controls button {
+        padding: 0.35rem 1rem;
+        background: #2e2e44;
+        border: 1px solid #44446a;
+        border-radius: 5px;
+        color: #c8c4f0;
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+      }
+
+      .controls button:hover {
+        background: #3a3a5a;
+        border-color: #6666aa;
+      }
+
+      /* ── maze ── */
+      .maze-wrap {
+        overflow: auto;
+        background: #1a1a24;
+        border: 1px solid #2a2a38;
+        border-radius: 10px;
+        padding: 0.25rem 0.5rem;
+      }
+
+      #compare-maze {
+        display: grid;
+        width: fit-content;
+        gap: 0;
+        line-height: 0;
+      }
+
+      #compare-maze .wall {
+        background: #1e1e2e;
+      }
+
+      #compare-maze .path {
+        /* background-color set inline per-cell */
+      }
+
+      #compare-maze .overlap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+      }
+
+      /* ── tooltip ── */
+      #tooltip {
+        display: none;
+        position: fixed;
+        z-index: 100;
+        background: #16161f;
+        border: 1px solid #3a3a55;
+        border-radius: 6px;
+        padding: 0.45rem 0.75rem;
+        font-size: 0.78rem;
+        color: #d4d0cc;
+        pointer-events: none;
+        max-width: 280px;
+        line-height: 1.5;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Algorithm Comparison</h1>
+      <nav><a href="/">← Back to demo</a></nav>
+    </header>
+
+    <section id="legend-section">
+      <div class="legend-header">
+        <h2>Legend</h2>
+        <div class="legend-toggles">
+          <button id="select-all-btn">All</button>
+          <button id="deselect-all-btn">None</button>
+        </div>
+      </div>
+      <div id="legend">
+        <!-- populated by compare.ts -->
+      </div>
+      <div class="legend-overlap">
+        <div class="overlap-swatch">N</div>
+        <span>N algorithms share this cell — hover to see which</span>
+      </div>
+    </section>
+
+    <div class="controls">
+      <label>W <input type="number" id="w-input" value="90" min="2" max="200" /></label>
+      <label>H <input type="number" id="h-input" value="40" min="2" max="200" /></label>
+      <button id="regen-btn">Regenerate</button>
+    </div>
+
+    <div class="maze-wrap">
+      <div id="compare-maze"></div>
+    </div>
+
+    <script type="module" src="/compare.ts"></script>
+  </body>
+</html>
