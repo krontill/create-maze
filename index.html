@@ -135,8 +135,8 @@
         <h2>Depth-First Search</h2>
         <p>Iterative recursive backtracker. Produces long, winding corridors with few dead ends. O(W×H) time and space.</p>
         <div class="controls">
-          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
-          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
           <button class="regen-btn">Regenerate</button>
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
@@ -146,8 +146,8 @@
         <h2>Prim's Algorithm</h2>
         <p>Randomised Prim's — grows from a seed cell by randomly picking frontier walls. Produces more branchy, uniform mazes. O(W×H) average.</p>
         <div class="controls">
-          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
-          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
           <button class="regen-btn">Regenerate</button>
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
@@ -157,8 +157,8 @@
         <h2>Kruskal's Algorithm</h2>
         <p>Randomised Kruskal's — shuffles all internal walls and merges disjoint sets. Produces uniformly random spanning trees. O(W×H · α(W×H)) time.</p>
         <div class="controls">
-          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
-          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
           <button class="regen-btn">Regenerate</button>
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
@@ -168,8 +168,8 @@
         <h2>Binary Tree</h2>
         <p>Processes every cell once, carving north or east at random. Produces a strong diagonal bias toward the top-right. O(W×H) time, O(1) extra space.</p>
         <div class="controls">
-          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
-          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
           <button class="regen-btn">Regenerate</button>
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
@@ -179,8 +179,8 @@
         <h2>Wilson's Algorithm</h2>
         <p>Loop-erased random walks grow the maze one path at a time. Produces a provably uniform spanning tree — every perfect maze is equally likely. O(W×H·log(W×H)) expected time.</p>
         <div class="controls">
-          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
-          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
           <button class="regen-btn">Regenerate</button>
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
@@ -189,8 +189,8 @@
         <h2>Aldous-Broder</h2>
         <p>Uniform random walk over the grid — walls are removed only on the first visit to each cell. Produces a uniform spanning tree with no bias. Simple but slow: O(W×H·log(W×H)) expected time.</p>
         <div class="controls">
-          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
-          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
           <button class="regen-btn">Regenerate</button>
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
@@ -199,8 +199,8 @@
         <h2>Eller's Algorithm</h2>
         <p>Builds the maze one row at a time using disjoint sets. Merges adjacent cells of different sets horizontally, then carves at least one downward passage per set. Produces a perfect maze in O(W×H) time with only O(W) space.</p>
         <div class="controls">
-          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
-          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
           <button class="regen-btn">Regenerate</button>
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
@@ -209,8 +209,8 @@
         <h2>Sidewinder</h2>
         <p>Processes each row left to right, collecting cells into a run. Each step either extends the run east or closes it by carving north from a random run member. The top row is always open east. O(W×H) time, O(W) space.</p>
         <div class="controls">
-          <label>W <input type="number" class="w-input" value="15" min="2" max="50" /></label>
-          <label>H <input type="number" class="h-input" value="15" min="2" max="50" /></label>
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
           <button class="regen-btn">Regenerate</button>
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>

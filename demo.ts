@@ -1,7 +1,7 @@
 import { generateMaze, Algorithm } from './src/index';
 import type { MazeMatrix } from './src/index';
 
-const CELL_PX = 16;
+const CELL_PX = 8;
 
 function renderMaze(matrix: MazeMatrix, container: HTMLElement): void {
   const rows = matrix.length;
@@ -38,8 +38,8 @@ function initSection(section: HTMLElement): void {
   const mazeEl = section.querySelector<HTMLElement>('.maze')!;
 
   function generate(): void {
-    const width = Math.max(2, Math.min(50, parseInt(wInput.value, 10) || 15));
-    const height = Math.max(2, Math.min(50, parseInt(hInput.value, 10) || 15));
+    const width = Math.max(2, Math.min(100, parseInt(wInput.value, 10) || 20));
+    const height = Math.max(2, Math.min(100, parseInt(hInput.value, 10) || 15));
     wInput.value = String(width);
     hInput.value = String(height);
 
