@@ -19,6 +19,7 @@ import { EllersGenerator } from './algorithms/ellers';
 import { SidewinderGenerator } from './algorithms/sidewinder';
 import { HuntAndKillGenerator } from './algorithms/hunt-and-kill';
 import { RecursiveDivisionGenerator } from './algorithms/recursive-division';
+import { GrowingTreeGenerator } from './algorithms/growing-tree';
 import { matrixToGraph } from './utils/graph';
 
 // Re-export enums (values) and types (types only)
@@ -41,6 +42,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.SIDEWINDER]: new SidewinderGenerator(),
   [Algorithm.HUNT_AND_KILL]: new HuntAndKillGenerator(),
   [Algorithm.RECURSIVE_DIVISION]: new RecursiveDivisionGenerator(),
+  [Algorithm.GROWING_TREE]: new GrowingTreeGenerator(),
 };
 
 // ---------------------------------------------------------------------------
