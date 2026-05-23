@@ -16,6 +16,7 @@ export enum Algorithm {
   ELLERS = 'ellers',
   SIDEWINDER = 'sidewinder',
   HUNT_AND_KILL = 'hunt-and-kill',
+  RECURSIVE_DIVISION = 'recursive-division',
 }
 
 /** Supported output formats. */

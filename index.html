@@ -225,6 +225,16 @@
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
       </section>
+      <section class="card" data-algo="recursive-division">
+        <h2>Recursive Division</h2>
+        <p>Starts with a fully open grid and repeatedly bisects chambers with walls, leaving exactly one passage per wall. Produces mazes with long straight corridors and clearly visible rectangular regions. O(W×H) time, O(W+H) stack space.</p>
+        <div class="controls">
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="maze-wrap"><div class="maze"></div></div>
+      </section>
     </div>
 
     <script type="module" src="/demo.ts"></script>
