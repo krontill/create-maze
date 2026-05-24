@@ -47,18 +47,27 @@ const graph = generateMaze({ width: 5, height: 5, algorithm: Algorithm.PRIMS, fo
 | `Algorithm.DFS` | Iterative Depth-First Search (Recursive Backtracker) | O(W×H) | O(W×H) |
 | `Algorithm.PRIMS` | Randomised Prim's | O(W×H) | O(W×H) |
 | `Algorithm.KRUSKALS` | Randomised Kruskal's (Union-Find) | O(W×H·α(W×H)) | O(W×H) |
+| `Algorithm.BINARY_TREE` | Binary Tree maze generation | O(W×H) | O(W×H) |
+| `Algorithm.WILSONS` | Wilson's algorithm | O(W×H) | O(W×H) |
+| `Algorithm.ALDOUS_BRODER` | Aldous-Broder random walk | O(W×H) | O(W×H) |
+| `Algorithm.ELLERS` | Eller’s algorithm | O(W×H) | O(W) |
+| `Algorithm.SIDEWINDER` | Sidewinder algorithm | O(W×H) | O(W) |
+| `Algorithm.HUNT_AND_KILL` | Hunt-and-kill algorithm | O(W×H) | O(W×H) |
+| `Algorithm.RECURSIVE_DIVISION` | Recursive division | O(W×H) | O(W×H) |
+| `Algorithm.GROWING_TREE` | Growing Tree algorithm | O(W×H) | O(W×H) |
+| `Algorithm.HOUSTONS` | Houston's algorithm | O(W×H) | O(W×H) |
 
 ### Output Formats
 
-- **`Format.MATRIX`** (default) — `number[][]` grid of size `(2H+1)×(2W+1)`. `0` = wall, `1` = passage. Entry opens at `grid[1][0]`; exit at `grid[2H-1][2W]`.
-- **`Format.GRAPH`** — `GraphNode[]` adjacency list. Each node: `{ id, x, y, neighbors }`.
+- **`Format.MATRIX`** (default) - `number[][]` grid of size `(2H+1)×(2W+1)`. `0` = wall, `1` = passage. Entry opens at `grid[1][0]`; exit at `grid[2H-1][2W]`.
+- **`Format.GRAPH`** - `GraphNode[]` adjacency list. Each node: `{ id, x, y, neighbors }`.
 
 ## Development
 
 ```sh
 yarn install        # install dev dependencies
 yarn test           # vitest watch mode
-yarn test:run       # single test run (54 tests)
+yarn test:run       # single test run
 yarn test:coverage  # coverage report
 yarn typecheck      # tsc --noEmit
 yarn build          # Vite library build → dist/

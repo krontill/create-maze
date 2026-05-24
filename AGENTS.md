@@ -2,7 +2,7 @@
 
 ## Purpose
 This is the core npm library for maze generation. It is responsible STRICTLY for mathematics, algorithms, and data structures. It is framework-agnostic, side-effect-free, and tree-shakeable.
-Built with Vite (Library mode). Dual ESM/CJS output with automatic `.d.ts` declaration generation. Full TypeScript support with declaration files. High-coverage unit testing
+Built with Vite (Library mode). Dual ESM/CJS output with automatic `.d.ts` declaration generation. Full TypeScript support with declaration files. High-coverage unit testing.
 
 
 ## Absolute Rules
@@ -22,6 +22,11 @@ When generating code, adhere to these conceptual data structures:
 - **Output Format:** Algorithms should output a standardized format. By default, a 2D numeric array (`number[][]`), where `0` represents a wall and `1` represents a path.
 - **Pathfinder Output:** Solving algorithms should return an array of coordinates: `Array<{x: number, y: number}>`.
 
+## Public API
+- `Algorithm` currently includes `DFS`, `PRIMS`, `KRUSKALS`, `BINARY_TREE`, `WILSONS`, `ALDOUS_BRODER`, `ELLERS`, `SIDEWINDER`, `HUNT_AND_KILL`, `RECURSIVE_DIVISION`, `GROWING_TREE`, and `HOUSTONS`.
+- `Format` currently includes `MATRIX` and `GRAPH`.
+- `generateMaze()` returns `MazeMatrix` by default, or `MazeGraph` when called with `format: Format.GRAPH`.
+
 ## Architectural Patterns
 - Use the **Strategy Pattern** for generating mazes. Different algorithms (DFS, Prim's, Kruskal's) must implement a common `IMazeGenerator` interface.
 
@@ -36,8 +41,9 @@ When prompted under this domain, act as a strict Computer Science expert. Focus 
 ```
 src/
   algorithms/   # Maze generation algorithms (one file per algorithm)
-  index.ts      # Public API entry point
-  TBD: Add more folders as needed (e.g., utils/, types/)
+  utils/         # Shared grid, graph, and random helpers
+  index.ts       # Public API entry point
+  types.ts       # Public enums, interfaces, and output types
 ```
 
 ## Dot-Folder Policy
