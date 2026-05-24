@@ -8,7 +8,7 @@
  */
 
 import { Algorithm, Format } from './types';
-import type { MazeConfig, MazeMatrix, MazeGraph, IMazeGenerator } from './types';
+import type { FractalMode, MazeConfig, MazeMatrix, MazeGraph, IMazeGenerator } from './types';
 import { DFSGenerator } from './algorithms/dfs';
 import { PrimsGenerator } from './algorithms/prims';
 import { KruskalsGenerator } from './algorithms/kruskals';
@@ -22,11 +22,12 @@ import { HuntAndKillGenerator } from './algorithms/hunt-and-kill';
 import { RecursiveDivisionGenerator } from './algorithms/recursive-division';
 import { GrowingTreeGenerator } from './algorithms/growing-tree';
 import { HoustonsGenerator } from './algorithms/houstons';
+import { FractalTessellationGenerator } from './algorithms/fractal-tessellation';
 import { matrixToGraph } from './utils/graph';
 
 // Re-export enums (values) and types (types only)
 export { Algorithm, Format };
-export type { MazeConfig, MazeMatrix, MazeGraph, IMazeGenerator };
+export type { FractalMode, MazeConfig, MazeMatrix, MazeGraph, IMazeGenerator };
 export type { GraphNode } from './types';
 
 // ---------------------------------------------------------------------------
@@ -47,6 +48,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.RECURSIVE_DIVISION]: new RecursiveDivisionGenerator(),
   [Algorithm.GROWING_TREE]: new GrowingTreeGenerator(),
   [Algorithm.HOUSTONS]: new HoustonsGenerator(),
+  [Algorithm.FRACTAL_TESSELLATION]: new FractalTessellationGenerator(),
 };
 
 // ---------------------------------------------------------------------------
@@ -87,6 +89,15 @@ function validateConfig(config: MazeConfig): void {
   if (config.seed !== undefined && !Number.isFinite(config.seed)) {
     throw new TypeError(
       `MazeConfig.seed must be a finite number, got ${config.seed}`,
+    );
+  }
+  if (
+    config.fractalMode !== undefined &&
+    config.fractalMode !== 'tile-substitution' &&
+    config.fractalMode !== 'quadtree-division'
+  ) {
+    throw new TypeError(
+      `MazeConfig.fractalMode must be one of [tile-substitution, quadtree-division], got "${config.fractalMode}"`,
     );
   }
 }

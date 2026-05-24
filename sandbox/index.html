@@ -153,7 +153,7 @@
   <body>
     <header>
       <h1>maze-builder</h1>
-      <p>Maze generation algorithms rendered as CSS Grid examples. Spiral Backtracker includes three distinct seeded variants. &nbsp;<a href="/compare.html" style="color:#6666aa;font-size:0.85rem;text-decoration:none;border-bottom:1px solid #6666aa44;padding-bottom:1px;">View algorithm comparison →</a></p>
+      <p>Maze generation algorithms rendered as CSS Grid examples. Spiral Backtracker includes three distinct seeded variants, and Fractal Tessellation includes two generation modes. &nbsp;<a href="/compare.html" style="color:#6666aa;font-size:0.85rem;text-decoration:none;border-bottom:1px solid #6666aa44;padding-bottom:1px;">View algorithm comparison →</a></p>
     </header>
 
     <div class="grid">
@@ -264,6 +264,26 @@
       <section class="card" data-algo="recursive-division">
         <h2>Recursive Division</h2>
         <p>Starts with a fully open grid and repeatedly bisects chambers with walls, leaving exactly one passage per wall. Produces mazes with long straight corridors and clearly visible rectangular regions. O(W×H) time, O(W+H) stack space.</p>
+        <div class="controls">
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="maze-wrap"><div class="maze"></div></div>
+      </section>
+      <section class="card" data-algo="fractal-tessellation" data-fractal-mode="tile-substitution">
+        <h2>Fractal Tessellation (Tile Substitution)</h2>
+        <p>Builds a recursive motif map, then carves a DFS maze guided by local tile preferences. Produces repeating fractal-like directional bands while staying fully connected. O(W×H) time and space.</p>
+        <div class="controls">
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="maze-wrap"><div class="maze"></div></div>
+      </section>
+      <section class="card" data-algo="fractal-tessellation" data-fractal-mode="quadtree-division">
+        <h2>Fractal Tessellation (Quadtree Division)</h2>
+        <p>Recursively subdivides into quadrants, carves local trees, then joins child regions with a spanning connector set. Produces block-structured macro patterns with connected micro-texture. O(W×H) time and space.</p>
         <div class="controls">
           <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
           <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>

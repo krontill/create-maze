@@ -3,6 +3,15 @@ import type { MazeMatrix } from '../src/index';
 
 const CELL_PX = 8;
 const SPIRAL_SEEDS = [0, 1, 2] as const;
+type FractalMode = 'tile-substitution' | 'quadtree-division';
+
+function getFractalMode(section: HTMLElement): FractalMode | undefined {
+  const mode = section.dataset['fractalMode'];
+  if (mode === 'tile-substitution' || mode === 'quadtree-division') {
+    return mode;
+  }
+  return undefined;
+}
 
 function renderMaze(matrix: MazeMatrix, container: HTMLElement): void {
   const rows = matrix.length;
@@ -33,6 +42,7 @@ function renderMaze(matrix: MazeMatrix, container: HTMLElement): void {
 
 function initSection(section: HTMLElement): void {
   const algo = section.dataset['algo'] as Algorithm;
+  const fractalMode = getFractalMode(section);
   const wInput = section.querySelector<HTMLInputElement>('.w-input')!;
   const hInput = section.querySelector<HTMLInputElement>('.h-input')!;
   const regenBtn = section.querySelector<HTMLButtonElement>('.regen-btn')!;
@@ -86,7 +96,7 @@ function initSection(section: HTMLElement): void {
       return;
     }
 
-    const matrix = generateMaze({ width, height, algorithm: algo });
+    const matrix = generateMaze({ width, height, algorithm: algo, fractalMode });
     renderMaze(matrix, mazeEl);
   }
 

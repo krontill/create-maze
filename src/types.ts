@@ -20,7 +20,11 @@ export enum Algorithm {
   RECURSIVE_DIVISION = 'recursive-division',
   GROWING_TREE = 'growing-tree',
   HOUSTONS = 'houstons',
+  FRACTAL_TESSELLATION = 'fractal-tessellation',
 }
+
+/** Fractal Tessellation generation modes. */
+export type FractalMode = 'tile-substitution' | 'quadtree-division';
 
 /** Supported output formats. */
 export enum Format {
@@ -49,6 +53,12 @@ export interface MazeConfig {
    * width/height/algorithm always produces an identical maze.
    */
   seed?: number;
+  /**
+   * Optional mode used by Algorithm.FRACTAL_TESSELLATION.
+   *
+   * @defaultValue 'tile-substitution'
+   */
+  fractalMode?: FractalMode;
 }
 
 /**

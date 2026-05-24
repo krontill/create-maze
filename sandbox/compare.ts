@@ -8,6 +8,7 @@ interface AlgorithmDef {
   label: string;
   color: string;
   seed?: number;
+  fractalMode?: 'tile-substitution' | 'quadtree-division';
 }
 
 interface TimedMaze {
@@ -37,6 +38,8 @@ const ALGORITHMS: AlgorithmDef[] = [
   { algo: Algorithm.SPIRAL_BACKTRACKER,label: 'Spiral Backtracker (seed 2)', color: '#0369a1', seed: 2 },
   { algo: Algorithm.HUNT_AND_KILL,     label: 'Hunt-and-Kill',        color: '#a855f7' },
   { algo: Algorithm.RECURSIVE_DIVISION,label: 'Recursive Division',   color: '#ec4899' },
+  { algo: Algorithm.FRACTAL_TESSELLATION, label: 'Fractal Tessellation (Tile Substitution)', color: '#f43f5e', fractalMode: 'tile-substitution' },
+  { algo: Algorithm.FRACTAL_TESSELLATION, label: 'Fractal Tessellation (Quadtree Division)', color: '#10b981', fractalMode: 'quadtree-division' },
   { algo: Algorithm.GROWING_TREE,      label: 'Growing Tree',         color: '#84cc16' },
   { algo: Algorithm.HOUSTONS,          label: "Houston's",            color: '#d946ef' },
 ];
@@ -48,9 +51,9 @@ function generateAllMazes(
   width: number,
   height: number,
 ): TimedMaze[] {
-  return selected.map(({ algo, label, seed }) => {
+  return selected.map(({ algo, label, seed, fractalMode }) => {
     const startedAt = performance.now();
-    const maze = generateMaze({ width, height, algorithm: algo, seed }) as MazeMatrix;
+    const maze = generateMaze({ width, height, algorithm: algo, seed, fractalMode }) as MazeMatrix;
     const endedAt = performance.now();
 
     return {
