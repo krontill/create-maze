@@ -17,6 +17,7 @@ import { WilsonsGenerator } from './algorithms/wilsons';
 import { AldousBroderGenerator } from './algorithms/aldous-broder';
 import { EllersGenerator } from './algorithms/ellers';
 import { SidewinderGenerator } from './algorithms/sidewinder';
+import { SpiralBacktrackerGenerator } from './algorithms/spiral-backtracker';
 import { HuntAndKillGenerator } from './algorithms/hunt-and-kill';
 import { RecursiveDivisionGenerator } from './algorithms/recursive-division';
 import { GrowingTreeGenerator } from './algorithms/growing-tree';
@@ -41,6 +42,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.ALDOUS_BRODER]: new AldousBroderGenerator(),
   [Algorithm.ELLERS]: new EllersGenerator(),
   [Algorithm.SIDEWINDER]: new SidewinderGenerator(),
+  [Algorithm.SPIRAL_BACKTRACKER]: new SpiralBacktrackerGenerator(),
   [Algorithm.HUNT_AND_KILL]: new HuntAndKillGenerator(),
   [Algorithm.RECURSIVE_DIVISION]: new RecursiveDivisionGenerator(),
   [Algorithm.GROWING_TREE]: new GrowingTreeGenerator(),

@@ -7,6 +7,7 @@ interface AlgorithmDef {
   algo: Algorithm;
   label: string;
   color: string;
+  seed?: number;
 }
 
 interface TimedMaze {
@@ -31,6 +32,9 @@ const ALGORITHMS: AlgorithmDef[] = [
   { algo: Algorithm.ALDOUS_BRODER,     label: 'Aldous-Broder',        color: '#06b6d4' },
   { algo: Algorithm.ELLERS,            label: "Eller's",              color: '#3b82f6' },
   { algo: Algorithm.SIDEWINDER,        label: 'Sidewinder',           color: '#6366f1' },
+  { algo: Algorithm.SPIRAL_BACKTRACKER,label: 'Spiral Backtracker (seed 0)', color: '#0ea5e9', seed: 0 },
+  { algo: Algorithm.SPIRAL_BACKTRACKER,label: 'Spiral Backtracker (seed 1)', color: '#0284c7', seed: 1 },
+  { algo: Algorithm.SPIRAL_BACKTRACKER,label: 'Spiral Backtracker (seed 2)', color: '#0369a1', seed: 2 },
   { algo: Algorithm.HUNT_AND_KILL,     label: 'Hunt-and-Kill',        color: '#a855f7' },
   { algo: Algorithm.RECURSIVE_DIVISION,label: 'Recursive Division',   color: '#ec4899' },
   { algo: Algorithm.GROWING_TREE,      label: 'Growing Tree',         color: '#84cc16' },
@@ -39,10 +43,14 @@ const ALGORITHMS: AlgorithmDef[] = [
 
 // ---------- data helpers ----------
 
-function generateAllMazes(selected: AlgorithmDef[], width: number, height: number): TimedMaze[] {
-  return selected.map(({ algo, label }) => {
+function generateAllMazes(
+  selected: AlgorithmDef[],
+  width: number,
+  height: number,
+): TimedMaze[] {
+  return selected.map(({ algo, label, seed }) => {
     const startedAt = performance.now();
-    const maze = generateMaze({ width, height, algorithm: algo }) as MazeMatrix;
+    const maze = generateMaze({ width, height, algorithm: algo, seed }) as MazeMatrix;
     const endedAt = performance.now();
 
     return {
@@ -79,8 +87,8 @@ function buildOverlay(mazes: MazeMatrix[], selected: AlgorithmDef[]): string[][]
 }
 
 function getSelectedAlgorithms(container: HTMLElement): AlgorithmDef[] {
-  return ALGORITHMS.filter(({ algo }) => {
-    const cb = container.querySelector<HTMLInputElement>(`input[data-algo="${algo}"]`);
+  return ALGORITHMS.filter((_, index) => {
+    const cb = container.querySelector<HTMLInputElement>(`input[data-index="${index}"]`);
     return cb?.checked ?? true;
   });
 }
@@ -89,7 +97,7 @@ function getSelectedAlgorithms(container: HTMLElement): AlgorithmDef[] {
 
 function buildLegend(container: HTMLElement, onToggle: () => void): void {
   container.innerHTML = '';
-  for (const { algo, label, color } of ALGORITHMS) {
+  for (const [index, { algo, label, color }] of ALGORITHMS.entries()) {
     const item = document.createElement('label');
     item.className = 'legend-item';
 
@@ -98,6 +106,7 @@ function buildLegend(container: HTMLElement, onToggle: () => void): void {
     cb.checked = false;
     cb.defaultChecked = false;
     cb.dataset['algo'] = algo;
+    cb.dataset['index'] = String(index);
     cb.style.accentColor = color;
     cb.addEventListener('change', onToggle);
 
@@ -162,7 +171,11 @@ function renderCompareMaze(overlay: string[][][], container: HTMLElement): void 
   }
 }
 
-function renderTimingSummary(timedMazes: TimedMaze[], metrics: RenderMetrics | null, container: HTMLElement): void {
+function renderTimingSummary(
+  timedMazes: TimedMaze[],
+  metrics: RenderMetrics | null,
+  container: HTMLElement,
+): void {
   if (timedMazes.length === 0) {
     container.innerHTML = '';
     return;

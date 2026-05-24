@@ -15,6 +15,7 @@ export enum Algorithm {
   ALDOUS_BRODER = 'aldous-broder',
   ELLERS = 'ellers',
   SIDEWINDER = 'sidewinder',
+  SPIRAL_BACKTRACKER = 'spiral-backtracker',
   HUNT_AND_KILL = 'hunt-and-kill',
   RECURSIVE_DIVISION = 'recursive-division',
   GROWING_TREE = 'growing-tree',
