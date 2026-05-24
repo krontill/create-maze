@@ -9,6 +9,19 @@ interface AlgorithmDef {
   color: string;
 }
 
+interface TimedMaze {
+  maze: MazeMatrix;
+  label: string;
+  generationMs: number;
+}
+
+interface RenderMetrics {
+  generationTotalMs: number;
+  overlayBuildMs: number;
+  mazeRenderMs: number;
+  fullCycleMs: number;
+}
+
 const ALGORITHMS: AlgorithmDef[] = [
   { algo: Algorithm.DFS,               label: 'Depth-First Search',   color: '#ef4444' },
   { algo: Algorithm.PRIMS,             label: "Prim's",               color: '#f97316' },
@@ -26,8 +39,18 @@ const ALGORITHMS: AlgorithmDef[] = [
 
 // ---------- data helpers ----------
 
-function generateAllMazes(selected: AlgorithmDef[], width: number, height: number): MazeMatrix[] {
-  return selected.map(({ algo }) => generateMaze({ width, height, algorithm: algo }) as MazeMatrix);
+function generateAllMazes(selected: AlgorithmDef[], width: number, height: number): TimedMaze[] {
+  return selected.map(({ algo, label }) => {
+    const startedAt = performance.now();
+    const maze = generateMaze({ width, height, algorithm: algo }) as MazeMatrix;
+    const endedAt = performance.now();
+
+    return {
+      maze,
+      label,
+      generationMs: endedAt - startedAt,
+    };
+  });
 }
 
 /**
@@ -139,6 +162,36 @@ function renderCompareMaze(overlay: string[][][], container: HTMLElement): void 
   }
 }
 
+function renderTimingSummary(timedMazes: TimedMaze[], metrics: RenderMetrics | null, container: HTMLElement): void {
+  if (timedMazes.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const totalMs = timedMazes.reduce((sum, item) => sum + item.generationMs, 0);
+
+  const rows = timedMazes
+    .map(({ label, generationMs }) => {
+      return `<li><span>${label}</span><strong>${generationMs.toFixed(2)} ms</strong></li>`;
+    })
+    .join('');
+
+  const details = metrics
+    ? [
+        `<p class="timing-detail"><span>Overlay Build</span><strong>${metrics.overlayBuildMs.toFixed(2)} ms</strong></p>`,
+        `<p class="timing-detail"><span>Maze DOM Render</span><strong>${metrics.mazeRenderMs.toFixed(2)} ms</strong></p>`,
+        `<p class="timing-total"><span>Generation Total</span><strong>${metrics.generationTotalMs.toFixed(2)} ms</strong></p>`,
+        `<p class="timing-total timing-full"><span>Full Render Cycle</span><strong>${metrics.fullCycleMs.toFixed(2)} ms</strong></p>`,
+      ].join('')
+    : `<p class="timing-total"><span>Generation Total</span><strong>${totalMs.toFixed(2)} ms</strong></p>`;
+
+  container.innerHTML = [
+    '<h3>Algorithm Generation Time</h3>',
+    `<ul>${rows}</ul>`,
+    details,
+  ].join('');
+}
+
 // ---------- tooltip ----------
 
 function initTooltip(mazeEl: HTMLElement): void {
@@ -187,11 +240,14 @@ const selectAllBtn  = document.querySelector<HTMLButtonElement>('#select-all-btn
 const deselectAllBtn= document.querySelector<HTMLButtonElement>('#deselect-all-btn')!;
 const legendEl      = document.querySelector<HTMLElement>('#legend')!;
 const mazeEl        = document.querySelector<HTMLElement>('#compare-maze')!;
+const timingsEl     = document.querySelector<HTMLElement>('#timings')!;
 
 function generate(): void {
+  const cycleStartedAt = performance.now();
   const selected = getSelectedAlgorithms(legendEl);
   if (selected.length === 0) {
     mazeEl.innerHTML = '';
+    renderTimingSummary([], null, timingsEl);
     return;
   }
 
@@ -200,9 +256,29 @@ function generate(): void {
   wInput.value  = String(width);
   hInput.value = String(height);
 
-  const mazes   = generateAllMazes(selected, width, height);
+  const timedMazes = generateAllMazes(selected, width, height);
+  const generationTotalMs = timedMazes.reduce((sum, entry) => sum + entry.generationMs, 0);
+
+  const overlayStartedAt = performance.now();
+  const mazes = timedMazes.map((entry) => entry.maze);
   const overlay = buildOverlay(mazes, selected);
+  const overlayBuildMs = performance.now() - overlayStartedAt;
+
+  const renderStartedAt = performance.now();
   renderCompareMaze(overlay, mazeEl);
+  const mazeRenderMs = performance.now() - renderStartedAt;
+
+  const fullCycleMs = performance.now() - cycleStartedAt;
+  renderTimingSummary(
+    timedMazes,
+    {
+      generationTotalMs,
+      overlayBuildMs,
+      mazeRenderMs,
+      fullCycleMs,
+    },
+    timingsEl,
+  );
 }
 
 buildLegend(legendEl, generate);

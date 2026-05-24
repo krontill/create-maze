@@ -251,6 +251,58 @@
         line-height: 1.5;
         box-shadow: 0 4px 16px rgba(0,0,0,0.5);
       }
+
+      /* ── timing summary ── */
+      #timings {
+        margin-top: 0.75rem;
+        background: #1a1a24;
+        border: 1px solid #2a2a38;
+        border-radius: 10px;
+        padding: 0.75rem;
+      }
+
+      #timings h3 {
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #999;
+        margin-bottom: 0.5rem;
+      }
+
+      #timings ul {
+        list-style: none;
+        display: grid;
+        gap: 0.25rem;
+      }
+
+      #timings li,
+      #timings .timing-detail,
+      #timings .timing-total {
+        display: flex;
+        /* justify-content: space-between; */
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.84rem;
+        color: #d4d0cc;
+      }
+
+      #timings li strong,
+      #timings .timing-total strong {
+        color: #f5f0ea;
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+      }
+
+      #timings .timing-total {
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #2a2a38;
+      }
+
+      #timings .timing-full {
+        color: #f1eccf;
+      }
     </style>
   </head>
   <body>
@@ -285,6 +337,8 @@
     <div class="maze-wrap">
       <div id="compare-maze"></div>
     </div>
+
+    <section id="timings" aria-live="polite"></section>
 
     <script type="module" src="/compare.ts"></script>
   </body>
