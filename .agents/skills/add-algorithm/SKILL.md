@@ -5,18 +5,20 @@ description: >
   skill whenever the user wants to implement, add, create, or register a new
   generation algorithm — even if they only mention it in passing (e.g. "add
   Wilson's", "implement binary tree maze", "new generator", "another algorithm").
-  Covers all six steps: enum registration, algorithm file, public API wiring,
-  tests, and demo page card.
+  Covers all seven steps: enum registration, algorithm file, public API wiring,
+  tests, sandbox demo card, and compare page wiring.
 argument-hint: "[algorithm name]"
 ---
 
 # add-algorithm
 
-Add a new maze generation algorithm end-to-end: library code, tests, and demo page card.
+Add a new maze generation algorithm end-to-end: library code, tests, sandbox demo card, and compare page wiring.
 
 ## Overview
 
 The library uses a **Strategy pattern**. Every algorithm is a class that implements `IMazeGenerator`. The public API resolves the correct class at runtime via a `GENERATORS` record keyed by the `Algorithm` enum. The demo page auto-discovers algorithms from HTML `data-algo` attributes — no JavaScript changes are needed when adding a card.
+
+The sandbox compare page (`sandbox/compare.html` + `sandbox/compare.ts`) is separate from the card-based demo. It uses an explicit `ALGORITHMS` list in `sandbox/compare.ts`, so each new algorithm must also be added there.
 
 ## Steps
 
@@ -124,9 +126,9 @@ describe('MyAlgo', () => {
 });
 ```
 
-### 5 — Add a demo card (`index.html`)
+### 5 — Add a sandbox demo card (`sandbox/index.html`)
 
-Copy one of the existing `<section class="card">` blocks and update `data-algo`, `<h2>`, and `<p>`. The `demo.ts` script auto-discovers cards via `querySelectorAll('.card[data-algo]')` — **no changes to `demo.ts` are needed**.
+Copy one of the existing `<section class="card">` blocks and update `data-algo`, `<h2>`, and `<p>`. The `sandbox/demo.ts` script auto-discovers cards via `querySelectorAll('.card[data-algo]')` — **no changes to `sandbox/demo.ts` are needed**.
 
 ```html
 <section class="card" data-algo="my-algo">
@@ -143,7 +145,24 @@ Copy one of the existing `<section class="card">` blocks and update `data-algo`,
 
 The `data-algo` value must match the enum string value added in Step 1.
 
-### 6 — Verify
+### 6 — Register in compare page (`sandbox/compare.ts`)
+
+Add a new entry to the `ALGORITHMS` list so the algorithm appears in the comparison legend and overlay.
+
+```typescript
+const ALGORITHMS: AlgorithmDef[] = [
+  { algo: Algorithm.DFS, label: 'Depth-First Search', color: '#ef4444' },
+  // ...existing entries...
+  { algo: Algorithm.MY_ALGO, label: 'My Algorithm', color: '#10b981' }, // ← add this
+];
+```
+
+Notes:
+- Keep labels human-readable and consistent with the sandbox demo card title.
+- Choose a distinct color for readability in overlap mode.
+- No `sandbox/compare.html` structural changes are required for normal algorithm additions.
+
+### 7 — Verify
 
 ```bash
 pnpm test          # all tests must pass
@@ -171,6 +190,7 @@ Before finishing, verify:
 - [ ] `src/algorithms/<name>.ts` exists and exports a class implementing `IMazeGenerator`
 - [ ] Class imported and added to `GENERATORS` in `src/index.ts`
 - [ ] Tests written in `tests/<name>.test.ts` — dimensions, connectivity, determinism
-- [ ] Demo card added to `index.html` with matching `data-algo` value
+- [ ] Demo card added to `sandbox/index.html` with matching `data-algo` value
+- [ ] Algorithm added to `ALGORITHMS` in `sandbox/compare.ts` (algo, label, color)
 - [ ] `pnpm test` passes
 - [ ] `pnpm build` passes with no type errors
