@@ -24,6 +24,7 @@ export enum Algorithm {
   FRACTAL_TESSELLATION = 'fractal-tessellation',
   VORONOI_DIAGRAM = 'voronoi-diagram',
   ROOMS_AND_CORRIDORS = 'rooms-and-corridors',
+  SPANNING_TREE_BFS = 'spanning-tree-bfs',
 }
 
 /** Fractal Tessellation generation modes. */

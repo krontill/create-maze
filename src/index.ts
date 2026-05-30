@@ -34,6 +34,7 @@ import { TremauxGenerator } from './algorithms/tremaux';
 import { FractalTessellationGenerator } from './algorithms/fractal-tessellation';
 import { VoronoiDiagramGenerator } from './algorithms/voronoi-diagram';
 import { RoomsAndCorridorsGenerator } from './algorithms/rooms-and-corridors';
+import { SpanningTreeBFSGenerator } from './algorithms/spanning-tree-bfs';
 import { matrixToGraph } from './utils/graph';
 
 // Re-export enums (values) and types (types only)
@@ -71,6 +72,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.FRACTAL_TESSELLATION]: new FractalTessellationGenerator(),
   [Algorithm.VORONOI_DIAGRAM]: new VoronoiDiagramGenerator(),
   [Algorithm.ROOMS_AND_CORRIDORS]: new RoomsAndCorridorsGenerator(),
+  [Algorithm.SPANNING_TREE_BFS]: new SpanningTreeBFSGenerator(),
 };
 
 // ---------------------------------------------------------------------------

@@ -52,6 +52,7 @@ const ALGORITHMS: AlgorithmDef[] = [
   { algo: Algorithm.GROWING_TREE,      label: 'Growing Tree',         color: '#84cc16' },
   { algo: Algorithm.HOUSTONS,          label: "Houston's",            color: '#d946ef' },
   { algo: Algorithm.TREMAUX,           label: 'Tremaux',              color: '#f59e0b' },
+  { algo: Algorithm.SPANNING_TREE_BFS, label: 'Spanning Tree (BFS)',  color: '#b45309' },
 ];
 
 // ---------- data helpers ----------
