@@ -11,6 +11,7 @@ import { Algorithm, Format } from './types';
 import type {
   FractalMode,
   RoomsConnectionMode,
+  VoronoiPreset,
   MazeConfig,
   MazeMatrix,
   MazeGraph,
@@ -31,6 +32,7 @@ import { GrowingTreeGenerator } from './algorithms/growing-tree';
 import { HoustonsGenerator } from './algorithms/houstons';
 import { TremauxGenerator } from './algorithms/tremaux';
 import { FractalTessellationGenerator } from './algorithms/fractal-tessellation';
+import { VoronoiDiagramGenerator } from './algorithms/voronoi-diagram';
 import { RoomsAndCorridorsGenerator } from './algorithms/rooms-and-corridors';
 import { matrixToGraph } from './utils/graph';
 
@@ -39,6 +41,7 @@ export { Algorithm, Format };
 export type {
   FractalMode,
   RoomsConnectionMode,
+  VoronoiPreset,
   MazeConfig,
   MazeMatrix,
   MazeGraph,
@@ -66,6 +69,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.HOUSTONS]: new HoustonsGenerator(),
   [Algorithm.TREMAUX]: new TremauxGenerator(),
   [Algorithm.FRACTAL_TESSELLATION]: new FractalTessellationGenerator(),
+  [Algorithm.VORONOI_DIAGRAM]: new VoronoiDiagramGenerator(),
   [Algorithm.ROOMS_AND_CORRIDORS]: new RoomsAndCorridorsGenerator(),
 };
 
@@ -126,6 +130,15 @@ function validateConfig(config: MazeConfig): void {
   ) {
     throw new TypeError(
       `MazeConfig.roomsConnectionMode must be one of [manhattan-l, random-walk, nearest-mst], got "${config.roomsConnectionMode}"`,
+    );
+  }
+  if (
+    config.voronoiPreset !== undefined &&
+    config.voronoiPreset !== 'natural' &&
+    config.voronoiPreset !== 'structured'
+  ) {
+    throw new TypeError(
+      `MazeConfig.voronoiPreset must be one of [natural, structured], got "${config.voronoiPreset}"`,
     );
   }
 }

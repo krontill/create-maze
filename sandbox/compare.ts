@@ -1,6 +1,7 @@
 import { generateMaze, Algorithm } from '../src/index';
 import type { MazeMatrix } from '../src/index';
 import type { RoomsConnectionMode } from '../src/index';
+import type { VoronoiPreset } from '../src/index';
 
 const CELL_PX = 8;
 
@@ -11,6 +12,7 @@ interface AlgorithmDef {
   seed?: number;
   fractalMode?: 'tile-substitution' | 'quadtree-division';
   roomsConnectionMode?: RoomsConnectionMode;
+  voronoiPreset?: VoronoiPreset;
 }
 
 interface TimedMaze {
@@ -42,6 +44,8 @@ const ALGORITHMS: AlgorithmDef[] = [
   { algo: Algorithm.RECURSIVE_DIVISION,label: 'Recursive Division',   color: '#ec4899' },
   { algo: Algorithm.FRACTAL_TESSELLATION, label: 'Fractal Tessellation (Tile Substitution)', color: '#f43f5e', fractalMode: 'tile-substitution' },
   { algo: Algorithm.FRACTAL_TESSELLATION, label: 'Fractal Tessellation (Quadtree Division)', color: '#10b981', fractalMode: 'quadtree-division' },
+  { algo: Algorithm.VORONOI_DIAGRAM, label: 'Voronoi Diagram (Natural)', color: '#16a34a', voronoiPreset: 'natural' },
+  { algo: Algorithm.VORONOI_DIAGRAM, label: 'Voronoi Diagram (Structured)', color: '#0891b2', voronoiPreset: 'structured' },
   { algo: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Manhattan-L)', color: '#8b5cf6', roomsConnectionMode: 'manhattan-l' },
   { algo: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Random Walk)', color: '#14b8a6', roomsConnectionMode: 'random-walk' },
   { algo: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Nearest MST)', color: '#f59e0b', roomsConnectionMode: 'nearest-mst' },
@@ -57,7 +61,7 @@ function generateAllMazes(
   width: number,
   height: number,
 ): TimedMaze[] {
-  return selected.map(({ algo, label, seed, fractalMode, roomsConnectionMode }) => {
+  return selected.map(({ algo, label, seed, fractalMode, roomsConnectionMode, voronoiPreset }) => {
     const startedAt = performance.now();
     const maze = generateMaze({
       width,
@@ -66,6 +70,7 @@ function generateAllMazes(
       seed,
       fractalMode,
       roomsConnectionMode,
+      voronoiPreset,
     }) as MazeMatrix;
     const endedAt = performance.now();
 

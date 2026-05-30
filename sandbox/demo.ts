@@ -5,6 +5,7 @@ const CELL_PX = 8;
 const SPIRAL_SEEDS = [0, 1, 2] as const;
 type FractalMode = 'tile-substitution' | 'quadtree-division';
 type RoomsConnectionMode = 'manhattan-l' | 'random-walk' | 'nearest-mst';
+type VoronoiPreset = 'natural' | 'structured';
 
 const ROOMS_MODE_VARIANTS: Array<{ mode: RoomsConnectionMode; label: string }> = [
   { mode: 'manhattan-l', label: 'Manhattan-L' },
@@ -17,6 +18,16 @@ function getFractalMode(section: HTMLElement): FractalMode | undefined {
   if (mode === 'tile-substitution' || mode === 'quadtree-division') {
     return mode;
   }
+  return undefined;
+}
+
+function getVoronoiPreset(section: HTMLElement): VoronoiPreset | undefined {
+  const presetInput = section.querySelector<HTMLSelectElement>('.preset-input');
+  const preset = presetInput?.value;
+  if (preset === 'natural' || preset === 'structured') {
+    return preset;
+  }
+
   return undefined;
 }
 
@@ -134,7 +145,8 @@ function initSection(section: HTMLElement): void {
       return;
     }
 
-    const matrix = generateMaze({ width, height, algorithm: algo, fractalMode });
+    const voronoiPreset = getVoronoiPreset(section);
+    const matrix = generateMaze({ width, height, algorithm: algo, fractalMode, voronoiPreset });
     renderMaze(matrix, mazeEl);
   }
 
@@ -143,6 +155,8 @@ function initSection(section: HTMLElement): void {
   // Regenerate when size inputs change (on blur to avoid mid-typing glitches).
   wInput.addEventListener('change', generate);
   hInput.addEventListener('change', generate);
+  section.querySelector<HTMLSelectElement>('.preset-input')
+    ?.addEventListener('change', generate);
 
   generate();
 }

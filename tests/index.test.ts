@@ -128,4 +128,11 @@ describe('generateMaze – validation', () => {
       generateMaze({ width: 5, height: 5, algorithm: Algorithm.DFS, seed: Infinity }),
     ).toThrow(TypeError);
   });
+
+  it('throws TypeError for invalid voronoiPreset', () => {
+    expect(() =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      generateMaze({ width: 8, height: 8, algorithm: Algorithm.VORONOI_DIAGRAM, voronoiPreset: 'invalid' as any }),
+    ).toThrow(TypeError);
+  });
 });

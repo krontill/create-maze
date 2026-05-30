@@ -22,6 +22,7 @@ export enum Algorithm {
   HOUSTONS = 'houstons',
   TREMAUX = 'tremaux',
   FRACTAL_TESSELLATION = 'fractal-tessellation',
+  VORONOI_DIAGRAM = 'voronoi-diagram',
   ROOMS_AND_CORRIDORS = 'rooms-and-corridors',
 }
 
@@ -30,6 +31,9 @@ export type FractalMode = 'tile-substitution' | 'quadtree-division';
 
 /** Rooms & Corridors room-center connection modes. */
 export type RoomsConnectionMode = 'manhattan-l' | 'random-walk' | 'nearest-mst';
+
+/** Voronoi Diagram regional layout presets. */
+export type VoronoiPreset = 'natural' | 'structured';
 
 /** Supported output formats. */
 export enum Format {
@@ -71,6 +75,12 @@ export interface MazeConfig {
    * @defaultValue 'manhattan-l'
    */
   roomsConnectionMode?: RoomsConnectionMode;
+  /**
+   * Optional Voronoi style preset used by Algorithm.VORONOI_DIAGRAM.
+   *
+   * @defaultValue 'natural'
+   */
+  voronoiPreset?: VoronoiPreset;
 }
 
 /**
