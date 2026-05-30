@@ -1,5 +1,6 @@
 import { generateMaze, Algorithm } from '../src/index';
 import type { MazeMatrix } from '../src/index';
+import type { RoomsConnectionMode } from '../src/index';
 
 const CELL_PX = 8;
 
@@ -9,6 +10,7 @@ interface AlgorithmDef {
   color: string;
   seed?: number;
   fractalMode?: 'tile-substitution' | 'quadtree-division';
+  roomsConnectionMode?: RoomsConnectionMode;
 }
 
 interface TimedMaze {
@@ -40,6 +42,9 @@ const ALGORITHMS: AlgorithmDef[] = [
   { algo: Algorithm.RECURSIVE_DIVISION,label: 'Recursive Division',   color: '#ec4899' },
   { algo: Algorithm.FRACTAL_TESSELLATION, label: 'Fractal Tessellation (Tile Substitution)', color: '#f43f5e', fractalMode: 'tile-substitution' },
   { algo: Algorithm.FRACTAL_TESSELLATION, label: 'Fractal Tessellation (Quadtree Division)', color: '#10b981', fractalMode: 'quadtree-division' },
+  { algo: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Manhattan-L)', color: '#8b5cf6', roomsConnectionMode: 'manhattan-l' },
+  { algo: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Random Walk)', color: '#14b8a6', roomsConnectionMode: 'random-walk' },
+  { algo: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Nearest MST)', color: '#f59e0b', roomsConnectionMode: 'nearest-mst' },
   { algo: Algorithm.GROWING_TREE,      label: 'Growing Tree',         color: '#84cc16' },
   { algo: Algorithm.HOUSTONS,          label: "Houston's",            color: '#d946ef' },
   { algo: Algorithm.TREMAUX,           label: 'Tremaux',              color: '#f59e0b' },
@@ -52,9 +57,16 @@ function generateAllMazes(
   width: number,
   height: number,
 ): TimedMaze[] {
-  return selected.map(({ algo, label, seed, fractalMode }) => {
+  return selected.map(({ algo, label, seed, fractalMode, roomsConnectionMode }) => {
     const startedAt = performance.now();
-    const maze = generateMaze({ width, height, algorithm: algo, seed, fractalMode }) as MazeMatrix;
+    const maze = generateMaze({
+      width,
+      height,
+      algorithm: algo,
+      seed,
+      fractalMode,
+      roomsConnectionMode,
+    }) as MazeMatrix;
     const endedAt = performance.now();
 
     return {

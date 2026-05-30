@@ -22,10 +22,14 @@ export enum Algorithm {
   HOUSTONS = 'houstons',
   TREMAUX = 'tremaux',
   FRACTAL_TESSELLATION = 'fractal-tessellation',
+  ROOMS_AND_CORRIDORS = 'rooms-and-corridors',
 }
 
 /** Fractal Tessellation generation modes. */
 export type FractalMode = 'tile-substitution' | 'quadtree-division';
+
+/** Rooms & Corridors room-center connection modes. */
+export type RoomsConnectionMode = 'manhattan-l' | 'random-walk' | 'nearest-mst';
 
 /** Supported output formats. */
 export enum Format {
@@ -60,6 +64,13 @@ export interface MazeConfig {
    * @defaultValue 'tile-substitution'
    */
   fractalMode?: FractalMode;
+  /**
+   * Optional room-center connection mode used by
+   * Algorithm.ROOMS_AND_CORRIDORS.
+   *
+   * @defaultValue 'manhattan-l'
+   */
+  roomsConnectionMode?: RoomsConnectionMode;
 }
 
 /**

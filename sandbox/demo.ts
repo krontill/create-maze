@@ -4,6 +4,13 @@ import type { MazeMatrix } from '../src/index';
 const CELL_PX = 8;
 const SPIRAL_SEEDS = [0, 1, 2] as const;
 type FractalMode = 'tile-substitution' | 'quadtree-division';
+type RoomsConnectionMode = 'manhattan-l' | 'random-walk' | 'nearest-mst';
+
+const ROOMS_MODE_VARIANTS: Array<{ mode: RoomsConnectionMode; label: string }> = [
+  { mode: 'manhattan-l', label: 'Manhattan-L' },
+  { mode: 'random-walk', label: 'Random Walk' },
+  { mode: 'nearest-mst', label: 'Nearest MST' },
+];
 
 function getFractalMode(section: HTMLElement): FractalMode | undefined {
   const mode = section.dataset['fractalMode'];
@@ -48,22 +55,28 @@ function initSection(section: HTMLElement): void {
   const regenBtn = section.querySelector<HTMLButtonElement>('.regen-btn')!;
   const mazeEl = section.querySelector<HTMLElement>('.maze')!;
   const isSpiral = algo === Algorithm.SPIRAL_BACKTRACKER;
+  const isRoomsAndCorridors = algo === Algorithm.ROOMS_AND_CORRIDORS;
 
   let spiralMazeTargets: HTMLElement[] = [];
-  if (isSpiral) {
+  let roomsMazeTargets: HTMLElement[] = [];
+  if (isSpiral || isRoomsAndCorridors) {
     const mazeWrap = section.querySelector<HTMLElement>('.maze-wrap')!;
     mazeWrap.innerHTML = '';
 
     const examplesEl = document.createElement('div');
     examplesEl.className = 'maze-examples';
 
-    spiralMazeTargets = SPIRAL_SEEDS.map((seed) => {
+    const variants = isSpiral
+      ? SPIRAL_SEEDS.map((seed) => ({ key: String(seed), label: `Seed ${seed}` }))
+      : ROOMS_MODE_VARIANTS.map((entry) => ({ key: entry.mode, label: entry.label }));
+
+    const targets = variants.map((variant) => {
       const sampleEl = document.createElement('div');
       sampleEl.className = 'maze-sample';
 
       const labelEl = document.createElement('p');
       labelEl.className = 'sample-label';
-      labelEl.textContent = `Seed ${seed}`;
+      labelEl.textContent = variant.label;
 
       const sampleMazeEl = document.createElement('div');
       sampleMazeEl.className = 'maze';
@@ -74,6 +87,12 @@ function initSection(section: HTMLElement): void {
 
       return sampleMazeEl;
     });
+
+    if (isSpiral) {
+      spiralMazeTargets = targets;
+    } else {
+      roomsMazeTargets = targets;
+    }
 
     mazeWrap.appendChild(examplesEl);
   }
@@ -92,6 +111,25 @@ function initSection(section: HTMLElement): void {
         if (target !== undefined) {
           renderMaze(matrix, target);
         }
+      }
+      return;
+    }
+
+    if (isRoomsAndCorridors) {
+      for (let i = 0; i < ROOMS_MODE_VARIANTS.length; i++) {
+        const mode = ROOMS_MODE_VARIANTS[i]?.mode;
+        const target = roomsMazeTargets[i];
+        if (mode === undefined || target === undefined) {
+          continue;
+        }
+
+        const matrix = generateMaze({
+          width,
+          height,
+          algorithm: algo,
+          roomsConnectionMode: mode,
+        });
+        renderMaze(matrix, target);
       }
       return;
     }

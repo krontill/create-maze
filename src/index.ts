@@ -8,7 +8,14 @@
  */
 
 import { Algorithm, Format } from './types';
-import type { FractalMode, MazeConfig, MazeMatrix, MazeGraph, IMazeGenerator } from './types';
+import type {
+  FractalMode,
+  RoomsConnectionMode,
+  MazeConfig,
+  MazeMatrix,
+  MazeGraph,
+  IMazeGenerator,
+} from './types';
 import { DFSGenerator } from './algorithms/dfs';
 import { PrimsGenerator } from './algorithms/prims';
 import { KruskalsGenerator } from './algorithms/kruskals';
@@ -24,11 +31,19 @@ import { GrowingTreeGenerator } from './algorithms/growing-tree';
 import { HoustonsGenerator } from './algorithms/houstons';
 import { TremauxGenerator } from './algorithms/tremaux';
 import { FractalTessellationGenerator } from './algorithms/fractal-tessellation';
+import { RoomsAndCorridorsGenerator } from './algorithms/rooms-and-corridors';
 import { matrixToGraph } from './utils/graph';
 
 // Re-export enums (values) and types (types only)
 export { Algorithm, Format };
-export type { FractalMode, MazeConfig, MazeMatrix, MazeGraph, IMazeGenerator };
+export type {
+  FractalMode,
+  RoomsConnectionMode,
+  MazeConfig,
+  MazeMatrix,
+  MazeGraph,
+  IMazeGenerator,
+};
 export type { GraphNode } from './types';
 
 // ---------------------------------------------------------------------------
@@ -51,6 +66,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.HOUSTONS]: new HoustonsGenerator(),
   [Algorithm.TREMAUX]: new TremauxGenerator(),
   [Algorithm.FRACTAL_TESSELLATION]: new FractalTessellationGenerator(),
+  [Algorithm.ROOMS_AND_CORRIDORS]: new RoomsAndCorridorsGenerator(),
 };
 
 // ---------------------------------------------------------------------------
@@ -100,6 +116,16 @@ function validateConfig(config: MazeConfig): void {
   ) {
     throw new TypeError(
       `MazeConfig.fractalMode must be one of [tile-substitution, quadtree-division], got "${config.fractalMode}"`,
+    );
+  }
+  if (
+    config.roomsConnectionMode !== undefined &&
+    config.roomsConnectionMode !== 'manhattan-l' &&
+    config.roomsConnectionMode !== 'random-walk' &&
+    config.roomsConnectionMode !== 'nearest-mst'
+  ) {
+    throw new TypeError(
+      `MazeConfig.roomsConnectionMode must be one of [manhattan-l, random-walk, nearest-mst], got "${config.roomsConnectionMode}"`,
     );
   }
 }
