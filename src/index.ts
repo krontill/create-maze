@@ -22,6 +22,7 @@ import { HuntAndKillGenerator } from './algorithms/hunt-and-kill';
 import { RecursiveDivisionGenerator } from './algorithms/recursive-division';
 import { GrowingTreeGenerator } from './algorithms/growing-tree';
 import { HoustonsGenerator } from './algorithms/houstons';
+import { TremauxGenerator } from './algorithms/tremaux';
 import { FractalTessellationGenerator } from './algorithms/fractal-tessellation';
 import { matrixToGraph } from './utils/graph';
 
@@ -48,6 +49,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.RECURSIVE_DIVISION]: new RecursiveDivisionGenerator(),
   [Algorithm.GROWING_TREE]: new GrowingTreeGenerator(),
   [Algorithm.HOUSTONS]: new HoustonsGenerator(),
+  [Algorithm.TREMAUX]: new TremauxGenerator(),
   [Algorithm.FRACTAL_TESSELLATION]: new FractalTessellationGenerator(),
 };
 

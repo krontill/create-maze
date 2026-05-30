@@ -311,6 +311,16 @@
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>
       </section>
+      <section class="card" data-algo="tremaux">
+        <h2>Tremaux</h2>
+        <p>Tremaux-inspired traversal that tracks edge marks while carving only into unvisited cells. Produces a perfect maze with controlled backtracking behavior. O(W×H) time and space.</p>
+        <div class="controls">
+          <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
+          <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="maze-wrap"><div class="maze"></div></div>
+      </section>
     </div>
 
     <script type="module" src="/demo.ts"></script>

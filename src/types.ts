@@ -20,6 +20,7 @@ export enum Algorithm {
   RECURSIVE_DIVISION = 'recursive-division',
   GROWING_TREE = 'growing-tree',
   HOUSTONS = 'houstons',
+  TREMAUX = 'tremaux',
   FRACTAL_TESSELLATION = 'fractal-tessellation',
 }
 

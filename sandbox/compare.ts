@@ -42,6 +42,7 @@ const ALGORITHMS: AlgorithmDef[] = [
   { algo: Algorithm.FRACTAL_TESSELLATION, label: 'Fractal Tessellation (Quadtree Division)', color: '#10b981', fractalMode: 'quadtree-division' },
   { algo: Algorithm.GROWING_TREE,      label: 'Growing Tree',         color: '#84cc16' },
   { algo: Algorithm.HOUSTONS,          label: "Houston's",            color: '#d946ef' },
+  { algo: Algorithm.TREMAUX,           label: 'Tremaux',              color: '#f59e0b' },
 ];
 
 // ---------- data helpers ----------
