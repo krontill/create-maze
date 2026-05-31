@@ -13,7 +13,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, carvePassage, markCell } from '../utils/grid';
+import { createGrid, carvePassage, markCell, deepCopyMatrix } from '../utils/grid';
 import { createRandom, shuffle } from '../utils/random';
 
 /** Cardinal directions as [rowDelta, colDelta] pairs. */
@@ -37,6 +37,19 @@ function toEdgeKey(a: Cell, b: Cell): string {
 
 export class TremauxGenerator implements IMazeGenerator {
   generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
+  }
+
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -100,6 +113,7 @@ export class TremauxGenerator implements IMazeGenerator {
 
         const edgeKey = toEdgeKey(current, next);
         edgeMarks.set(edgeKey, (edgeMarks.get(edgeKey) ?? 0) + 1);
+        onStep?.(grid);
 
         stack.push(next);
         continue;

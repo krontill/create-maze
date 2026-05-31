@@ -22,7 +22,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, carvePassage, markCell } from '../utils/grid';
+import { createGrid, carvePassage, markCell, deepCopyMatrix } from '../utils/grid';
 import { createRandom, shuffle } from '../utils/random';
 
 /** Cardinal directions as [rowDelta, colDelta] pairs. */
@@ -45,6 +45,19 @@ export class HuntAndKillGenerator implements IMazeGenerator {
    * @returns MazeMatrix where 0 = wall, 1 = passage.
    */
   generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
+  }
+
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -80,6 +93,7 @@ export class HuntAndKillGenerator implements IMazeGenerator {
             visited[nr][nc] = true;
             row = nr;
             col = nc;
+            onStep?.(grid);
             moved = true;
             break;
           }
@@ -116,6 +130,7 @@ export class HuntAndKillGenerator implements IMazeGenerator {
           visited[r][c] = true;
           row = r;
           col = c;
+          onStep?.(grid);
           found = true;
           break outer;
         }

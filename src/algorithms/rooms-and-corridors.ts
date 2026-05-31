@@ -21,7 +21,7 @@ import type {
   MazeMatrix,
   RoomsConnectionMode,
 } from '../types';
-import { createGrid, carvePassage, markCell } from '../utils/grid';
+import { createGrid, carvePassage, markCell, deepCopyMatrix } from '../utils/grid';
 import { createRandom, shuffle } from '../utils/random';
 
 interface Room {
@@ -125,6 +125,7 @@ function carveStep(
   currentCol: number,
   nextRow: number,
   nextCol: number,
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   if (!visited[currentRow][currentCol]) {
     markCell(grid, currentRow, currentCol);
@@ -133,6 +134,7 @@ function carveStep(
 
   carvePassage(grid, currentRow, currentCol, nextRow, nextCol);
   markVisited(visited, nextRow, nextCol);
+  onStep?.(grid);
 }
 
 function carveRoom(grid: MazeMatrix, visited: boolean[][], room: Room): void {
@@ -161,6 +163,7 @@ function carveManhattanL(
   from: Point,
   to: Point,
   random: () => number,
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   let row = from.row;
   let col = from.col;
@@ -170,7 +173,7 @@ function carveManhattanL(
   const stepHorizontal = (): void => {
     while (col !== to.col) {
       const nextCol = col + (to.col > col ? 1 : -1);
-      carveStep(grid, visited, row, col, row, nextCol);
+      carveStep(grid, visited, row, col, row, nextCol, onStep);
       col = nextCol;
     }
   };
@@ -178,7 +181,7 @@ function carveManhattanL(
   const stepVertical = (): void => {
     while (row !== to.row) {
       const nextRow = row + (to.row > row ? 1 : -1);
-      carveStep(grid, visited, row, col, nextRow, col);
+      carveStep(grid, visited, row, col, nextRow, col, onStep);
       row = nextRow;
     }
   };
@@ -200,6 +203,7 @@ function carveRandomWalk(
   from: Point,
   to: Point,
   random: () => number,
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   let row = from.row;
   let col = from.col;
@@ -235,13 +239,13 @@ function carveRandomWalk(
       next = neighbors[Math.floor(random() * neighbors.length)] as Point;
     }
 
-    carveStep(grid, visited, row, col, next.row, next.col);
+    carveStep(grid, visited, row, col, next.row, next.col, onStep);
     row = next.row;
     col = next.col;
   }
 
   // Fallback to guaranteed completion with an L-path.
-  carveManhattanL(grid, visited, { row, col }, to, random);
+  carveManhattanL(grid, visited, { row, col }, to, random, onStep);
 }
 
 function buildNearestNeighborEdges(centers: Point[], random: () => number): Edge[] {
@@ -354,6 +358,7 @@ function connectRooms(
   centers: Point[],
   mode: RoomsConnectionMode,
   random: () => number,
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   const edges = mode === 'nearest-mst'
     ? buildMstEdges(centers, random)
@@ -364,11 +369,11 @@ function connectRooms(
     const to = centers[edge.to] as Point;
 
     if (mode === 'random-walk') {
-      carveRandomWalk(grid, visited, width, height, from, to, random);
+      carveRandomWalk(grid, visited, width, height, from, to, random, onStep);
       continue;
     }
 
-    carveManhattanL(grid, visited, from, to, random);
+    carveManhattanL(grid, visited, from, to, random, onStep);
   }
 }
 
@@ -378,6 +383,7 @@ function expandToAllCells(
   height: number,
   visited: boolean[][],
   random: () => number,
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   let start: Point | null = null;
 
@@ -419,7 +425,7 @@ function expandToAllCells(
         continue;
       }
 
-      carveStep(grid, visited, current.row, current.col, nr, nc);
+      carveStep(grid, visited, current.row, current.col, nr, nc, onStep);
       stack.push({ row: nr, col: nc });
       moved = true;
       break;
@@ -459,6 +465,19 @@ function expandToAllCells(
 
 export class RoomsAndCorridorsGenerator implements IMazeGenerator {
   generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
+  }
+
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -475,14 +494,15 @@ export class RoomsAndCorridorsGenerator implements IMazeGenerator {
     }
 
     const centers = rooms.map(getRoomCenter);
-    connectRooms(grid, visited, width, height, centers, mode, random);
+    connectRooms(grid, visited, width, height, centers, mode, random, onStep);
 
     // Ensure every logical maze cell is part of a single connected structure.
-    expandToAllCells(grid, width, height, visited, random);
+    expandToAllCells(grid, width, height, visited, random, onStep);
 
     // Keep entry and exit explicitly open.
     grid[1][0] = 1;
     grid[2 * height - 1][2 * width] = 1;
+    onStep?.(grid);
 
     return grid;
   }

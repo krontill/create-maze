@@ -10,7 +10,7 @@
  */
 
 import type { FractalMode, IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, carvePassage, markCell } from '../utils/grid';
+import { createGrid, carvePassage, markCell, deepCopyMatrix } from '../utils/grid';
 import { createRandom, shuffle } from '../utils/random';
 
 interface Cell {
@@ -116,6 +116,7 @@ function carveTileSubstitution(
   width: number,
   height: number,
   random: () => number,
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   const motifMap = createMotifMap(width, height, random);
   const visited = createVisited(width, height);
@@ -163,6 +164,7 @@ function carveTileSubstitution(
 
     visited[next.row][next.col] = true;
     carvePassage(grid, current.row, current.col, next.row, next.col);
+    onStep?.(grid);
     stack.push(next);
   }
 }
@@ -171,6 +173,7 @@ function carveLocalTree(
   grid: MazeMatrix,
   random: () => number,
   region: Region,
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   const width = region.c1 - region.c0 + 1;
   const height = region.r1 - region.r0 + 1;
@@ -206,6 +209,7 @@ function carveLocalTree(
       ) {
         visited[nextRow - region.r0][nextCol - region.c0] = true;
         carvePassage(grid, current.row, current.col, nextRow, nextCol);
+        onStep?.(grid);
         stack.push({ row: nextRow, col: nextCol });
         moved = true;
         break;
@@ -226,6 +230,7 @@ function connectQuadrants(
   grid: MazeMatrix,
   random: () => number,
   regions: Region[],
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   if (regions.length <= 1) {
     return;
@@ -315,6 +320,7 @@ function connectQuadrants(
   for (const edge of edges) {
     if (union(edge.a, edge.b)) {
       edge.carve();
+      onStep?.(grid);
     }
   }
 }
@@ -323,12 +329,13 @@ function carveQuadtreeDivision(
   grid: MazeMatrix,
   random: () => number,
   region: Region,
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   const regionWidth = region.c1 - region.c0 + 1;
   const regionHeight = region.r1 - region.r0 + 1;
 
   if (regionWidth <= 2 || regionHeight <= 2) {
-    carveLocalTree(grid, random, region);
+    carveLocalTree(grid, random, region, onStep);
     return;
   }
 
@@ -343,10 +350,10 @@ function carveQuadtreeDivision(
   ].filter(isValidRegion);
 
   for (const quadrant of quadrants) {
-    carveQuadtreeDivision(grid, random, quadrant);
+    carveQuadtreeDivision(grid, random, quadrant, onStep);
   }
 
-  connectQuadrants(grid, random, quadrants);
+  connectQuadrants(grid, random, quadrants, onStep);
 }
 
 function resolveMode(config: MazeConfig): FractalMode {
@@ -358,13 +365,26 @@ function resolveMode(config: MazeConfig): FractalMode {
 
 export class FractalTessellationGenerator implements IMazeGenerator {
   generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
+  }
+
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
     const mode = resolveMode(config);
 
     if (mode === 'tile-substitution') {
-      carveTileSubstitution(grid, width, height, random);
+      carveTileSubstitution(grid, width, height, random, onStep);
       return grid;
     }
 
@@ -373,7 +393,7 @@ export class FractalTessellationGenerator implements IMazeGenerator {
       c0: 0,
       r1: height - 1,
       c1: width - 1,
-    });
+    }, onStep);
 
     return grid;
   }

@@ -20,7 +20,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, carvePassage, markCell } from '../utils/grid';
+import { createGrid, carvePassage, markCell, deepCopyMatrix } from '../utils/grid';
 import { createRandom } from '../utils/random';
 
 /** Cardinal directions as [rowDelta, colDelta] pairs. */
@@ -35,14 +35,10 @@ const DIRECTIONS: [number, number][] = [
  * Growing Tree maze generator implementing the Strategy pattern via IMazeGenerator.
  */
 export class GrowingTreeGenerator implements IMazeGenerator {
-  /**
-   * Generates a perfect maze using the Growing Tree algorithm with a
-   * 50 / 50 newest-vs-random cell selection mix.
-   *
-   * @param config - Validated maze configuration.
-   * @returns MazeMatrix where 0 = wall, 1 = passage.
-   */
-  generate(config: MazeConfig): MazeMatrix {
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -92,6 +88,7 @@ export class GrowingTreeGenerator implements IMazeGenerator {
 
         visited[nr][nc] = true;
         carvePassage(grid, row, col, nr, nc);
+        onStep?.(grid);
         active.push([nr, nc]);
       } else {
         // No unvisited neighbours — remove this cell via swap-and-pop (O(1))
@@ -101,5 +98,22 @@ export class GrowingTreeGenerator implements IMazeGenerator {
     }
 
     return grid;
+  }
+
+  /**
+   * Generates a perfect maze using the Growing Tree algorithm with a
+   * 50 / 50 newest-vs-random cell selection mix.
+   *
+   * @param config - Validated maze configuration.
+   * @returns MazeMatrix where 0 = wall, 1 = passage.
+   */
+  generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
   }
 }

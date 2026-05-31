@@ -119,4 +119,15 @@ export interface IMazeGenerator {
    * @returns A MazeMatrix where 0 = wall and 1 = passage.
    */
   generate(config: MazeConfig): MazeMatrix;
+
+  /**
+   * Generate a maze and return an ordered array of intermediate snapshots,
+   * one per meaningful carving step. The last snapshot is identical to the
+   * result of `generate()`. The `format` field of config is ignored — all
+   * snapshots are always MazeMatrix instances.
+   *
+   * @param config - Validated maze configuration.
+   * @returns Array of MazeMatrix snapshots, earliest first.
+   */
+  steps(config: MazeConfig): MazeMatrix[];
 }

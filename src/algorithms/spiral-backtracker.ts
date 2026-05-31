@@ -11,7 +11,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, carvePassage, markCell } from '../utils/grid';
+import { createGrid, carvePassage, markCell, deepCopyMatrix } from '../utils/grid';
 import { createRandom, shuffle } from '../utils/random';
 
 /** Cardinal directions in clockwise order: up, right, down, left. */
@@ -29,13 +29,10 @@ type StackEntry = [number, number, number];
  * Spiral Backtracker generator implementing the Strategy pattern.
  */
 export class SpiralBacktrackerGenerator implements IMazeGenerator {
-  /**
-   * Generates a perfect maze with a directional turning bias.
-   *
-   * @param config - Validated maze configuration.
-   * @returns MazeMatrix where 0 = wall and 1 = passage.
-   */
-  generate(config: MazeConfig): MazeMatrix {
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -106,9 +103,26 @@ export class SpiralBacktrackerGenerator implements IMazeGenerator {
 
       visited[nr][nc] = true;
       carvePassage(grid, row, col, nr, nc);
+      onStep?.(grid);
       stack.push([nr, nc, chosenDirection]);
     }
 
     return grid;
+  }
+
+  /**
+   * Generates a perfect maze with a directional turning bias.
+   *
+   * @param config - Validated maze configuration.
+   * @returns MazeMatrix where 0 = wall and 1 = passage.
+   */
+  generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
   }
 }

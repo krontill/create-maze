@@ -11,20 +11,17 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, markCell, carvePassage } from '../utils/grid';
+import { createGrid, markCell, carvePassage, deepCopyMatrix } from '../utils/grid';
 import { createRandom } from '../utils/random';
 
 /**
  * Sidewinder maze generator implementing the Strategy pattern via IMazeGenerator.
  */
 export class SidewinderGenerator implements IMazeGenerator {
-  /**
-   * Generates a perfect maze using the Sidewinder algorithm.
-   *
-   * @param config - Validated maze configuration.
-   * @returns MazeMatrix where 0 = wall, 1 = passage.
-   */
-  generate(config: MazeConfig): MazeMatrix {
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -52,16 +49,34 @@ export class SidewinderGenerator implements IMazeGenerator {
             const member = run[memberIndex];
             if (member !== undefined) {
               carvePassage(grid, r, member, r - 1, member);
+              onStep?.(grid);
             }
           }
           run.length = 0;
         } else {
           // Extend the run eastward
           carvePassage(grid, r, c, r, c + 1);
+          onStep?.(grid);
         }
       }
     }
 
     return grid;
+  }
+
+  /**
+   * Generates a perfect maze using the Sidewinder algorithm.
+   *
+   * @param config - Validated maze configuration.
+   * @returns MazeMatrix where 0 = wall, 1 = passage.
+   */
+  generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
   }
 }

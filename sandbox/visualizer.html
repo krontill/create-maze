@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>maze-builder · Step-by-Step Visualizer</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: system-ui, sans-serif;
+        background: #0f0f14;
+        color: #e0dcd6;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        padding: 1.25rem 1.5rem 1rem;
+        border-bottom: 1px solid #1e1e2e;
+        display: flex;
+        align-items: baseline;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+      }
+
+      header h1 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #f5f0ea;
+        white-space: nowrap;
+      }
+
+      header nav {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.82rem;
+      }
+
+      header nav a {
+        color: #6666aa;
+        text-decoration: none;
+        border-bottom: 1px solid #6666aa44;
+        padding-bottom: 1px;
+        white-space: nowrap;
+      }
+
+      header nav a:hover { border-color: #6666aa; }
+
+      /* ── Layout ─────────────────────────────────────────────────── */
+
+      .layout {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+      }
+
+      /* ── Sidebar ────────────────────────────────────────────────── */
+
+      .sidebar {
+        width: 240px;
+        flex-shrink: 0;
+        border-right: 1px solid #1e1e2e;
+        padding: 1rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .sidebar-section h3 {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #666;
+        margin-bottom: 0.5rem;
+      }
+
+      .algo-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .algo-group-label {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #555;
+        margin-bottom: 0.2rem;
+        margin-top: 0.4rem;
+      }
+
+      .algo-check {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        color: #b0accc;
+        cursor: pointer;
+        padding: 0.15rem 0;
+      }
+
+      .algo-check input[type="checkbox"] {
+        accent-color: #6666aa;
+        cursor: pointer;
+      }
+
+      .size-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .size-row label {
+        font-size: 0.8rem;
+        color: #999;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .size-row input[type="number"] {
+        width: 52px;
+        padding: 0.2rem 0.35rem;
+        background: #0f0f14;
+        border: 1px solid #2a2a38;
+        border-radius: 4px;
+        color: #e0dcd6;
+        font-size: 0.82rem;
+        text-align: center;
+        -moz-appearance: textfield;
+      }
+
+      .size-row input[type="number"]::-webkit-inner-spin-button,
+      .size-row input[type="number"]::-webkit-outer-spin-button { opacity: 0.3; }
+
+      .btn-generate {
+        width: 100%;
+        padding: 0.45rem;
+        background: #2e2e44;
+        border: 1px solid #44446a;
+        border-radius: 6px;
+        color: #c8c4f0;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+      }
+
+      .btn-generate:hover {
+        background: #3a3a5a;
+        border-color: #6666aa;
+      }
+
+      .btn-select-row {
+        display: flex;
+        gap: 0.4rem;
+      }
+
+      .btn-select {
+        flex: 1;
+        padding: 0.28rem 0;
+        background: #1a1a26;
+        border: 1px solid #2a2a38;
+        border-radius: 5px;
+        color: #8f8aa8;
+        font-size: 0.78rem;
+        cursor: pointer;
+        transition: background 0.12s, border-color 0.12s, color 0.12s;
+      }
+
+      .btn-select:hover {
+        background: #252535;
+        border-color: #6666aa;
+        color: #c8c4f0;
+      }
+
+      /* ── Main panel ─────────────────────────────────────────────── */
+
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      /* ── Playback bar ───────────────────────────────────────────── */
+
+      .playbar {
+        padding: 0.6rem 1rem;
+        border-bottom: 1px solid #1e1e2e;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        flex-wrap: wrap;
+      }
+
+      .playbar button {
+        padding: 0.25rem 0.55rem;
+        background: #1e1e2e;
+        border: 1px solid #2a2a38;
+        border-radius: 5px;
+        color: #c0bcd8;
+        font-size: 0.9rem;
+        cursor: pointer;
+        line-height: 1;
+        transition: background 0.1s;
+      }
+
+      .playbar button:hover { background: #2a2a40; }
+      .playbar button:disabled { opacity: 0.35; cursor: default; }
+
+      .playbar .btn-play-pause {
+        min-width: 2rem;
+        font-size: 1rem;
+      }
+
+      .speed-label {
+        font-size: 0.75rem;
+        color: #666;
+        white-space: nowrap;
+      }
+
+      .speed-slider {
+        width: 90px;
+        accent-color: #6666aa;
+      }
+
+      .step-counter {
+        font-size: 0.78rem;
+        color: #888;
+        white-space: nowrap;
+        min-width: 80px;
+      }
+
+      progress {
+        flex: 1;
+        min-width: 80px;
+        height: 4px;
+        border-radius: 2px;
+        border: none;
+        background: #1e1e2e;
+        accent-color: #6666aa;
+      }
+
+      progress::-webkit-progress-bar { background: #1e1e2e; border-radius: 2px; }
+      progress::-webkit-progress-value { background: #6666aa; border-radius: 2px; }
+      progress::-moz-progress-bar { background: #6666aa; border-radius: 2px; }
+
+      /* ── Panel grid ─────────────────────────────────────────────── */
+
+      .panel-grid {
+        flex: 1;
+        overflow: auto;
+        padding: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+        align-content: flex-start;
+      }
+
+      .panel-empty {
+        color: #444;
+        font-size: 0.85rem;
+        padding: 2rem;
+      }
+
+      figure.panel {
+        background: #14141e;
+        border: 1px solid #2a2a38;
+        border-radius: 8px;
+        padding: 0.75rem 1rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        min-width: fit-content;
+      }
+
+      figcaption {
+        font-size: 0.78rem;
+        color: #8f8aa8;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+      }
+
+      figcaption strong {
+        color: #c0bcd8;
+        font-weight: 600;
+      }
+
+      .maze-container {
+        line-height: 0;
+      }
+
+      .maze {
+        display: grid;
+        width: fit-content;
+        gap: 0;
+      }
+
+      .maze .w { background: #1e1e2e; }
+      .maze .p { background: #f0ede8; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>maze-builder</h1>
+      <nav>
+        <a href="/index.html">← Demo</a>
+        <a href="/compare.html">Compare</a>
+        <a href="/visualizer.html">Step-by-Step</a>
+      </nav>
+    </header>
+
+    <div class="layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h3>Algorithms</h3>
+          <div class="btn-select-row">
+            <button class="btn-select" id="btn-all">All</button>
+            <button class="btn-select" id="btn-none">None</button>
+          </div>
+
+          <div class="algo-group-label">Classic</div>
+          <div class="algo-group">
+            <label class="algo-check"><input type="checkbox" value="dfs" /> DFS / Backtracker</label>
+            <label class="algo-check"><input type="checkbox" value="prims" /> Prim's</label>
+            <label class="algo-check"><input type="checkbox" value="kruskals" /> Kruskal's</label>
+            <label class="algo-check"><input type="checkbox" value="growing-tree" /> Growing Tree</label>
+            <label class="algo-check"><input type="checkbox" value="hunt-and-kill" /> Hunt-and-Kill</label>
+            <label class="algo-check"><input type="checkbox" value="spanning-tree-bfs" /> Spanning Tree BFS</label>
+          </div>
+
+          <div class="algo-group-label">Uniform</div>
+          <div class="algo-group">
+            <label class="algo-check"><input type="checkbox" value="wilsons" /> Wilson's</label>
+            <label class="algo-check"><input type="checkbox" value="aldous-broder" /> Aldous-Broder</label>
+            <label class="algo-check"><input type="checkbox" value="houstons" /> Houston's</label>
+          </div>
+
+          <div class="algo-group-label">Row-Based</div>
+          <div class="algo-group">
+            <label class="algo-check"><input type="checkbox" value="ellers" /> Eller's</label>
+            <label class="algo-check"><input type="checkbox" value="sidewinder" /> Sidewinder</label>
+            <label class="algo-check"><input type="checkbox" value="binary-tree" /> Binary Tree</label>
+          </div>
+
+          <div class="algo-group-label">Tree Variants</div>
+          <div class="algo-group">
+            <label class="algo-check"><input type="checkbox" value="spiral-backtracker" /> Spiral Backtracker</label>
+            <label class="algo-check"><input type="checkbox" value="tremaux" /> Trémaux</label>
+          </div>
+
+          <div class="algo-group-label">Wall-Based</div>
+          <div class="algo-group">
+            <label class="algo-check"><input type="checkbox" value="recursive-division" /> Recursive Division</label>
+          </div>
+
+          <div class="algo-group-label">Advanced</div>
+          <div class="algo-group">
+            <label class="algo-check"><input type="checkbox" value="fractal-tessellation" /> Fractal Tessellation</label>
+            <label class="algo-check"><input type="checkbox" value="fractal-tessellation-qt" /> Fractal Tessellation (Quadtree)</label>
+            <label class="algo-check"><input type="checkbox" value="voronoi-natural" /> Voronoi (Natural)</label>
+            <label class="algo-check"><input type="checkbox" value="voronoi-structured" /> Voronoi (Structured)</label>
+            <label class="algo-check"><input type="checkbox" value="rooms-manhattan" /> Rooms &amp; Corridors (Manhattan)</label>
+            <label class="algo-check"><input type="checkbox" value="rooms-random-walk" /> Rooms &amp; Corridors (Random Walk)</label>
+            <label class="algo-check"><input type="checkbox" value="rooms-nearest-mst" /> Rooms &amp; Corridors (MST)</label>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h3>Maze Size</h3>
+          <div class="size-row">
+            <label>W <input type="number" id="inp-width" value="12" min="2" max="100" /></label>
+            <label>H <input type="number" id="inp-height" value="9" min="2" max="100" /></label>
+          </div>
+        </div>
+
+        <button class="btn-generate" id="btn-generate">Generate &amp; Play</button>
+      </aside>
+
+      <!-- Main -->
+      <div class="main">
+        <!-- Playback bar -->
+        <div class="playbar">
+          <button id="btn-restart" title="Restart">↺</button>
+          <button id="btn-prev" title="Previous step">◀</button>
+          <button id="btn-play-pause" class="btn-play-pause" title="Play / Pause">▶</button>
+          <button id="btn-next" title="Next step">▶|</button>
+          <span class="speed-label">Speed</span>
+          <input type="range" class="speed-slider" id="speed-slider" min="1" max="10" value="5" title="Playback speed" />
+          <progress id="progress-bar" value="0" max="1"></progress>
+          <span class="step-counter" id="step-counter">— / —</span>
+        </div>
+
+        <!-- Panel grid -->
+        <div class="panel-grid" id="panel-grid">
+          <p class="panel-empty">Select algorithms and click <strong>Generate &amp; Play</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./visualizer.ts"></script>
+  </body>
+</html>

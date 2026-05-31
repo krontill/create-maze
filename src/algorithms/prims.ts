@@ -12,7 +12,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, carvePassage, markCell } from '../utils/grid';
+import { createGrid, carvePassage, markCell, deepCopyMatrix } from '../utils/grid';
 import { createRandom } from '../utils/random';
 
 /** Cardinal directions as [rowDelta, colDelta] pairs. */
@@ -38,13 +38,10 @@ interface FrontierEntry {
  * Prim's maze generator implementing the Strategy pattern via IMazeGenerator.
  */
 export class PrimsGenerator implements IMazeGenerator {
-  /**
-   * Generates a perfect maze using randomised Prim's algorithm.
-   *
-   * @param config - Validated maze configuration.
-   * @returns MazeMatrix where 0 = wall, 1 = passage.
-   */
-  generate(config: MazeConfig): MazeMatrix {
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -88,9 +85,26 @@ export class PrimsGenerator implements IMazeGenerator {
 
       inMaze[row][col] = true;
       carvePassage(grid, fromRow, fromCol, row, col);
+      onStep?.(grid);
       addFrontier(row, col);
     }
 
     return grid;
+  }
+
+  /**
+   * Generates a perfect maze using randomised Prim's algorithm.
+   *
+   * @param config - Validated maze configuration.
+   * @returns MazeMatrix where 0 = wall, 1 = passage.
+   */
+  generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
   }
 }

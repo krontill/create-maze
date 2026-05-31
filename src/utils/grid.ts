@@ -85,3 +85,16 @@ export function carvePassage(
   grid[wallRow][wallCol] = 1;
   grid[2 * toRow + 1][2 * toCol + 1] = 1;
 }
+
+/**
+ * Returns an independent deep copy of a MazeMatrix.
+ * Used by algorithm `steps()` implementations to snapshot intermediate states.
+ *
+ * Time complexity:  O(W × H)
+ * Space complexity: O(W × H)
+ *
+ * @param matrix - The source matrix to clone.
+ */
+export function deepCopyMatrix(matrix: MazeMatrix): MazeMatrix {
+  return matrix.map(row => [...row]);
+}

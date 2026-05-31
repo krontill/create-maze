@@ -13,7 +13,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, markCell, carvePassage } from '../utils/grid';
+import { createGrid, markCell, carvePassage, deepCopyMatrix } from '../utils/grid';
 import { createRandom } from '../utils/random';
 
 /**
@@ -27,6 +27,19 @@ export class EllersGenerator implements IMazeGenerator {
    * @returns MazeMatrix where 0 = wall, 1 = passage.
    */
   generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
+  }
+
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -62,7 +75,10 @@ export class EllersGenerator implements IMazeGenerator {
       }
 
       // Nothing more to do on the final row.
-      if (isLastRow) break;
+      if (isLastRow) {
+        onStep?.(grid);
+        break;
+      }
 
       // --- Vertical connections ---
       // Group current-row columns by their set, then for each set randomly
@@ -112,6 +128,7 @@ export class EllersGenerator implements IMazeGenerator {
       }
 
       rowSets = nextRowSets;
+      onStep?.(grid);
     }
 
     return grid;

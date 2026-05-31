@@ -15,7 +15,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, markCell, carvePassage } from '../utils/grid';
+import { createGrid, markCell, carvePassage, deepCopyMatrix } from '../utils/grid';
 import { createRandom } from '../utils/random';
 
 /**
@@ -65,6 +65,7 @@ function divide(
   r2: number,
   c2: number,
   random: () => number,
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   const chamberWidth = c2 - c1 + 1;
   const chamberHeight = r2 - r1 + 1;
@@ -106,9 +107,10 @@ function divide(
         grid[2 * wr + 2][2 * c + 1] = 0;
       }
     }
+    onStep?.(grid);
 
-    divide(grid, r1, c1, wr, c2, random);
-    divide(grid, wr + 1, c1, r2, c2, random);
+    divide(grid, r1, c1, wr, c2, random, onStep);
+    divide(grid, wr + 1, c1, r2, c2, random, onStep);
   } else {
     // Draw a vertical wall between cell col `wc` and `wc + 1`.
     // The wall sits at grid col 2*wc+2; valid range: [c1, c2-1].
@@ -123,9 +125,10 @@ function divide(
         grid[2 * r + 1][2 * wc + 2] = 0;
       }
     }
+    onStep?.(grid);
 
-    divide(grid, r1, c1, r2, wc, random);
-    divide(grid, r1, wc + 1, r2, c2, random);
+    divide(grid, r1, c1, r2, wc, random, onStep);
+    divide(grid, r1, wc + 1, r2, c2, random, onStep);
   }
 }
 
@@ -138,6 +141,19 @@ export class RecursiveDivisionGenerator implements IMazeGenerator {
    * @returns MazeMatrix where 0 = wall, 1 = passage.
    */
   generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
+  }
+
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -146,7 +162,7 @@ export class RecursiveDivisionGenerator implements IMazeGenerator {
     openAll(grid, width, height);
 
     // Recursively divide the full chamber.
-    divide(grid, 0, 0, height - 1, width - 1, random);
+    divide(grid, 0, 0, height - 1, width - 1, random, onStep);
 
     return grid;
   }

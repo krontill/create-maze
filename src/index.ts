@@ -184,3 +184,27 @@ export function generateMaze(config: MazeConfig): MazeMatrix | MazeGraph {
 
   return matrix;
 }
+
+/**
+ * Generates a maze and returns an ordered array of intermediate snapshots —
+ * one per meaningful carving step — so callers can animate the algorithm.
+ *
+ * The last snapshot is identical to the result of
+ * {@link generateMaze} called with the same config (matrix format).
+ * The `format` field of `config` is ignored; snapshots are always
+ * {@link MazeMatrix} instances.
+ *
+ * @param config - Maze configuration. Same validation rules as generateMaze().
+ * @returns Ordered array of MazeMatrix snapshots, earliest first.
+ *
+ * @example
+ * ```ts
+ * const frames = generateMazeSteps({ width: 10, height: 10, algorithm: Algorithm.DFS });
+ * console.log(`${frames.length} steps`);
+ * // animate frames[0], frames[1], …, frames[frames.length - 1]
+ * ```
+ */
+export function generateMazeSteps(config: MazeConfig): MazeMatrix[] {
+  validateConfig(config);
+  return GENERATORS[config.algorithm].steps(config);
+}

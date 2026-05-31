@@ -10,7 +10,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix, VoronoiPreset } from '../types';
-import { createGrid, carvePassage, markCell } from '../utils/grid';
+import { createGrid, carvePassage, markCell, deepCopyMatrix } from '../utils/grid';
 import { createRandom, shuffle } from '../utils/random';
 
 type Cell = [row: number, col: number];
@@ -199,6 +199,7 @@ function carveIntraRegionForest(
   regionCount: number,
   random: () => number,
   dsu: DisjointSet,
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   const visitedByRegion: boolean[][] = Array.from(
     { length: regionCount },
@@ -249,6 +250,7 @@ function carveIntraRegionForest(
           carvePassage(grid, curRow, curCol, nextRow, nextCol);
           dsu.union(toCellId(curRow, curCol, width), nextId);
           stack.push([nextRow, nextCol]);
+          onStep?.(grid);
           moved = true;
           break;
         }
@@ -301,16 +303,31 @@ function connectWithEdges(
   grid: MazeMatrix,
   dsu: DisjointSet,
   edges: CandidateEdge[],
+  onStep?: (grid: MazeMatrix) => void,
 ): void {
   for (const edge of edges) {
     if (dsu.union(edge.fromId, edge.toId)) {
       carvePassage(grid, edge.from[0], edge.from[1], edge.to[0], edge.to[1]);
+      onStep?.(grid);
     }
   }
 }
 
 export class VoronoiDiagramGenerator implements IMazeGenerator {
   generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
+  }
+
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const preset: VoronoiPreset = config.voronoiPreset ?? 'natural';
     const random = createRandom(seed);
@@ -327,15 +344,15 @@ export class VoronoiDiagramGenerator implements IMazeGenerator {
     const labels = assignVoronoiRegions(width, height, sites, preset);
 
     const dsu = new DisjointSet(width * height);
-    carveIntraRegionForest(grid, width, height, labels, siteCount, random, dsu);
+    carveIntraRegionForest(grid, width, height, labels, siteCount, random, dsu, onStep);
 
     const edgeSets = collectEdges(width, height, labels);
     shuffle(edgeSets.interRegion, random);
-    connectWithEdges(grid, dsu, edgeSets.interRegion);
+    connectWithEdges(grid, dsu, edgeSets.interRegion, onStep);
 
     if (dsu.count() > 1) {
       shuffle(edgeSets.all, random);
-      connectWithEdges(grid, dsu, edgeSets.all);
+      connectWithEdges(grid, dsu, edgeSets.all, onStep);
     }
 
     return grid;

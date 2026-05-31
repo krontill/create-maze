@@ -16,7 +16,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, carvePassage, markCell } from '../utils/grid';
+import { createGrid, carvePassage, markCell, deepCopyMatrix } from '../utils/grid';
 import { createRandom, shuffle } from '../utils/random';
 
 const DIRECTIONS: [number, number][] = [
@@ -31,6 +31,19 @@ type FrontierEntry = [row: number, col: number, parentRow: number, parentCol: nu
 
 export class SpanningTreeBFSGenerator implements IMazeGenerator {
   generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
+  }
+
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -58,6 +71,7 @@ export class SpanningTreeBFSGenerator implements IMazeGenerator {
 
       visited[row][col] = true;
       carvePassage(grid, parentRow, parentCol, row, col);
+      onStep?.(grid);
 
       this.enqueueNeighbours(queue, row, col, width, height, visited, random);
     }

@@ -13,7 +13,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, markCell, carvePassage } from '../utils/grid';
+import { createGrid, markCell, carvePassage, deepCopyMatrix } from '../utils/grid';
 import { createRandom, shuffle } from '../utils/random';
 
 // ---------------------------------------------------------------------------
@@ -96,13 +96,10 @@ interface Edge {
  * Kruskal's maze generator implementing the Strategy pattern via IMazeGenerator.
  */
 export class KruskalsGenerator implements IMazeGenerator {
-  /**
-   * Generates a perfect maze using randomised Kruskal's algorithm.
-   *
-   * @param config - Validated maze configuration.
-   * @returns MazeMatrix where 0 = wall, 1 = passage.
-   */
-  generate(config: MazeConfig): MazeMatrix {
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -135,9 +132,26 @@ export class KruskalsGenerator implements IMazeGenerator {
 
       if (union(dsu, id1, id2)) {
         carvePassage(grid, row1, col1, row2, col2);
+        onStep?.(grid);
       }
     }
 
     return grid;
+  }
+
+  /**
+   * Generates a perfect maze using randomised Kruskal's algorithm.
+   *
+   * @param config - Validated maze configuration.
+   * @returns MazeMatrix where 0 = wall, 1 = passage.
+   */
+  generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
   }
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateMaze, Algorithm, Format } from '../src';
+import { generateMaze, generateMazeSteps, Algorithm, Format } from '../src';
 import { isFullyConnected } from './helpers';
 
 // ---------------------------------------------------------------------------
@@ -136,3 +136,73 @@ describe('generateMaze – validation', () => {
     ).toThrow(TypeError);
   });
 });
+
+// ---------------------------------------------------------------------------
+// generateMazeSteps tests
+// ---------------------------------------------------------------------------
+
+const ALL_ALGORITHMS: Algorithm[] = [
+  Algorithm.DFS,
+  Algorithm.PRIMS,
+  Algorithm.KRUSKALS,
+  Algorithm.BINARY_TREE,
+  Algorithm.WILSONS,
+  Algorithm.ALDOUS_BRODER,
+  Algorithm.ELLERS,
+  Algorithm.SIDEWINDER,
+  Algorithm.SPIRAL_BACKTRACKER,
+  Algorithm.HUNT_AND_KILL,
+  Algorithm.RECURSIVE_DIVISION,
+  Algorithm.GROWING_TREE,
+  Algorithm.HOUSTONS,
+  Algorithm.TREMAUX,
+  Algorithm.FRACTAL_TESSELLATION,
+  Algorithm.VORONOI_DIAGRAM,
+  Algorithm.ROOMS_AND_CORRIDORS,
+  Algorithm.SPANNING_TREE_BFS,
+];
+
+for (const algorithm of ALL_ALGORITHMS) {
+  describe(`generateMazeSteps – ${algorithm}`, () => {
+    it('returns at least one step', () => {
+      const steps = generateMazeSteps({ width: 5, height: 5, algorithm, seed: 1 });
+      expect(steps.length).toBeGreaterThan(0);
+    });
+
+    it('last step equals the generateMaze() output', () => {
+      const cfg = { width: 5, height: 5, algorithm, seed: 42 };
+      const steps = generateMazeSteps(cfg);
+      const final = generateMaze(cfg);
+      expect(steps[steps.length - 1]).toEqual(final);
+    });
+
+    it('all steps have correct matrix dimensions', () => {
+      const w = 4;
+      const h = 4;
+      const steps = generateMazeSteps({ width: w, height: h, algorithm, seed: 7 });
+      for (const step of steps) {
+        expect(step).toHaveLength(2 * h + 1);
+        for (const row of step) {
+          expect(row).toHaveLength(2 * w + 1);
+        }
+      }
+    });
+
+    it('is deterministic with the same seed', () => {
+      const cfg = { width: 5, height: 5, algorithm, seed: 99 };
+      expect(generateMazeSteps(cfg)).toEqual(generateMazeSteps(cfg));
+    });
+
+    it('snapshots are independent (mutating one does not affect others)', () => {
+      const steps = generateMazeSteps({ width: 4, height: 4, algorithm, seed: 3 });
+      if (steps.length < 2) return;
+      const first = steps[0];
+      const second = steps[1];
+      if (first === undefined || second === undefined) return;
+      const originalValue = first[0][0];
+      first[0][0] = originalValue === 0 ? 99 : 0;
+      expect(second[0][0]).toBe(originalValue);
+      first[0][0] = originalValue;
+    });
+  });
+}

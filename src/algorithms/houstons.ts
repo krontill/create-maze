@@ -25,7 +25,7 @@
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, markCell, carvePassage } from '../utils/grid';
+import { createGrid, markCell, carvePassage, deepCopyMatrix } from '../utils/grid';
 import { createRandom } from '../utils/random';
 
 /** Cardinal directions as [rowDelta, colDelta] pairs. */
@@ -54,6 +54,19 @@ export class HoustonsGenerator implements IMazeGenerator {
    * @returns MazeMatrix where 0 = wall, 1 = passage.
    */
   generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
+  }
+
+  private _run(
+    config: MazeConfig,
+    onStep?: (grid: MazeMatrix) => void,
+  ): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
@@ -94,6 +107,7 @@ export class HoustonsGenerator implements IMazeGenerator {
         carvePassage(grid, row, col, nextRow, nextCol);
         inMaze[nextRow][nextCol] = true;
         inMazeCount++;
+        onStep?.(grid);
       }
 
       row = nextRow;
@@ -194,6 +208,7 @@ export class HoustonsGenerator implements IMazeGenerator {
         commitRow = nextRow;
         commitCol = nextCol;
       }
+      onStep?.(grid);
     }
 
     return grid;
