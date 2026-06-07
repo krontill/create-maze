@@ -23,7 +23,7 @@ When generating code, adhere to these conceptual data structures:
 - **Pathfinder Output:** Solving algorithms should return an array of coordinates: `Array<{x: number, y: number}>`.
 
 ## Public API
-- `Algorithm` currently includes `DFS`, `PRIMS`, `KRUSKALS`, `BINARY_TREE`, `WILSONS`, `ALDOUS_BRODER`, `ELLERS`, `SIDEWINDER`, `HUNT_AND_KILL`, `RECURSIVE_DIVISION`, `GROWING_TREE`, and `HOUSTONS`.
+- `Algorithm` currently includes `DFS`, `PRIMS`, `KRUSKALS`, `BINARY_TREE`, `WILSONS`, `ALDOUS_BRODER`, `ELLERS`, `SIDEWINDER`, `SPIRAL_BACKTRACKER`, `HUNT_AND_KILL`, `RECURSIVE_DIVISION`, `GROWING_TREE`, `HOUSTONS`, `TREMAUX`, `FRACTAL_TESSELLATION`, `ROOMS_AND_CORRIDORS`, `VORONOI_DIAGRAM`, and `SPANNING_TREE_BFS`.
 - `Format` currently includes `MATRIX` and `GRAPH`.
 - `generateMaze()` returns `MazeMatrix` by default, or `MazeGraph` when called with `format: Format.GRAPH`.
 

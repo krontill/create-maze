@@ -60,6 +60,8 @@ const graph = generateMaze({ width: 5, height: 5, algorithm: Algorithm.PRIMS, fo
 | `Algorithm.GROWING_TREE` | Growing Tree algorithm | O(W×H) | O(W×H) |
 | `Algorithm.HOUSTONS` | Houston's algorithm | O(W×H) | O(W×H) |
 | `Algorithm.TREMAUX` | Trémaux-inspired exploration/backtracking | O(W×H) | O(W×H) |
+| `Algorithm.SPIRAL_BACKTRACKER` | DFS variant with clockwise turning preference, producing spiral-heavy local structure | O(W×H) | O(W×H) |
+| `Algorithm.SPANNING_TREE_BFS` | BFS frontier spanning tree, producing shorter/wider paths and shallow dead ends | O(W×H) | O(W×H) |
 | `Algorithm.FRACTAL_TESSELLATION` | Fractal Tessellation (tile/quadtree modes) | O(W×H) | O(W×H) |
 | `Algorithm.ROOMS_AND_CORRIDORS` | Room placement with corridor connectors | O(W×H + R²) | O(W×H + R²) |
 | `Algorithm.VORONOI_DIAGRAM` | Voronoi regions + spanning connectors (natural/structured presets) | O(W×H×S) | O(W×H + S) |
