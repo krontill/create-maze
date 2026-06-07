@@ -48,6 +48,7 @@ const VARIANT_MAP: Record<string, AlgoVariant> = {
   'rooms-manhattan':        { algorithm: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Manhattan)', roomsConnectionMode: 'manhattan-l' },
   'rooms-random-walk':      { algorithm: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Walk)', roomsConnectionMode: 'random-walk' },
   'rooms-nearest-mst':      { algorithm: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (MST)', roomsConnectionMode: 'nearest-mst' },
+  'cellular-automaton':     { algorithm: Algorithm.CELLULAR_AUTOMATON,  label: 'Cellular Automaton' },
 };
 
 /** All sidebar checkboxes in document order — used for panel ordering. */

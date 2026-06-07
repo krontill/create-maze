@@ -35,6 +35,7 @@ import { FractalTessellationGenerator } from './algorithms/fractal-tessellation'
 import { VoronoiDiagramGenerator } from './algorithms/voronoi-diagram';
 import { RoomsAndCorridorsGenerator } from './algorithms/rooms-and-corridors';
 import { SpanningTreeBFSGenerator } from './algorithms/spanning-tree-bfs';
+import { CellularAutomatonGenerator } from './algorithms/cellular-automaton';
 import { matrixToGraph } from './utils/graph';
 
 // Re-export enums (values) and types (types only)
@@ -73,6 +74,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
   [Algorithm.VORONOI_DIAGRAM]: new VoronoiDiagramGenerator(),
   [Algorithm.ROOMS_AND_CORRIDORS]: new RoomsAndCorridorsGenerator(),
   [Algorithm.SPANNING_TREE_BFS]: new SpanningTreeBFSGenerator(),
+  [Algorithm.CELLULAR_AUTOMATON]: new CellularAutomatonGenerator(),
 };
 
 // ---------------------------------------------------------------------------
@@ -141,6 +143,22 @@ function validateConfig(config: MazeConfig): void {
   ) {
     throw new TypeError(
       `MazeConfig.voronoiPreset must be one of [natural, structured], got "${config.voronoiPreset}"`,
+    );
+  }
+  if (
+    config.caFillRatio !== undefined &&
+    (!Number.isFinite(config.caFillRatio) || config.caFillRatio <= 0 || config.caFillRatio >= 1)
+  ) {
+    throw new RangeError(
+      `MazeConfig.caFillRatio must be a number in the range (0, 1), got ${config.caFillRatio}`,
+    );
+  }
+  if (
+    config.caGenerations !== undefined &&
+    (!Number.isInteger(config.caGenerations) || config.caGenerations < 1)
+  ) {
+    throw new RangeError(
+      `MazeConfig.caGenerations must be a positive integer, got ${config.caGenerations}`,
     );
   }
 }

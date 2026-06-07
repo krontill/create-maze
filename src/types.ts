@@ -25,6 +25,7 @@ export enum Algorithm {
   VORONOI_DIAGRAM = 'voronoi-diagram',
   ROOMS_AND_CORRIDORS = 'rooms-and-corridors',
   SPANNING_TREE_BFS = 'spanning-tree-bfs',
+  CELLULAR_AUTOMATON = 'cellular-automaton',
 }
 
 /** Fractal Tessellation generation modes. */
@@ -82,6 +83,23 @@ export interface MazeConfig {
    * @defaultValue 'natural'
    */
   voronoiPreset?: VoronoiPreset;
+  /**
+   * Initial fill ratio for Algorithm.CELLULAR_AUTOMATON.
+   * Controls the probability that each cell starts alive.
+   * Must be in the range (0, 1).
+   *
+   * @defaultValue 0.45
+   */
+  caFillRatio?: number;
+  /**
+   * Number of CA simulation generations for Algorithm.CELLULAR_AUTOMATON.
+   * Higher values produce larger, smoother caves; lower values produce
+   * noisier, more fragmented passages.
+   * Must be a positive integer.
+   *
+   * @defaultValue 4
+   */
+  caGenerations?: number;
 }
 
 /**
