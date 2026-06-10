@@ -1,6 +1,7 @@
 import { generateMazeSteps, Algorithm } from '../src/index';
 import type { MazeMatrix } from '../src/index';
 import type { CellularAutomatonRule } from '../src/index';
+import { createRandom } from '../src/utils/random';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -25,6 +26,7 @@ interface AlgoEntry {
 // ── Constants ─────────────────────────────────────────────────────────────
 
 const CELL_PX = 6;
+const DEFAULT_CA_FILL_RATIO = 0.45;
 
 /** Maps checkbox value → AlgoVariant */
 const VARIANT_MAP: Record<string, AlgoVariant> = {
@@ -99,6 +101,22 @@ function speedToInterval(value: number): number {
 
 function getWidth():  number { return Math.max(2, Math.min(100, parseInt(widthInput.value, 10)  || 12)); }
 function getHeight(): number { return Math.max(2, Math.min(100, parseInt(heightInput.value, 10) || 9));  }
+
+/** Checked checkboxes are source of truth for which algorithms are generated. */
+function getSelectedAlgorithmKeys(): string[] {
+  const keys: string[] = [];
+  for (const cb of ALL_CHECKBOXES) {
+    if (cb.checked && VARIANT_MAP[cb.value]) keys.push(cb.value);
+  }
+  return keys;
+}
+
+function syncAlgoMapToSelection(selectedKeys: string[]): void {
+  const selectedSet = new Set(selectedKeys);
+  for (const key of Array.from(algoMap.keys())) {
+    if (!selectedSet.has(key)) removePanel(key);
+  }
+}
 
 function recalcMaxSteps(): void {
   maxSteps = 0;
@@ -239,8 +257,100 @@ function findInsertBefore(key: string): Element | null {
   return null;
 }
 
+function createCarvingBaseStep(width: number, height: number): MazeMatrix {
+  const rows = 2 * height + 1;
+  const cols = 2 * width + 1;
+  const grid = Array.from({ length: rows }, () => new Array<number>(cols).fill(0));
+
+  // Keep entry/exit openings consistent with core grid rules.
+  grid[1][0] = 1;
+  grid[2 * height - 1][2 * width] = 1;
+
+  return grid;
+}
+
+function createCellCentersStep(width: number, height: number): MazeMatrix {
+  const grid = createCarvingBaseStep(width, height);
+
+  for (let r = 0; r < height; r++) {
+    for (let c = 0; c < width; c++) {
+      grid[2 * r + 1][2 * c + 1] = 1;
+    }
+  }
+
+  return grid;
+}
+
+function createOpenFieldStep(width: number, height: number): MazeMatrix {
+  const grid = createCellCentersStep(width, height);
+
+  for (let r = 0; r < height; r++) {
+    for (let c = 0; c < width; c++) {
+      if (r + 1 < height) {
+        grid[2 * r + 2][2 * c + 1] = 1;
+      }
+      if (c + 1 < width) {
+        grid[2 * r + 1][2 * c + 2] = 1;
+      }
+    }
+  }
+
+  return grid;
+}
+
+function createCellularAutomatonSeedStep(
+  variant: AlgoVariant,
+  width: number,
+  height: number,
+): MazeMatrix {
+  const random = createRandom(variant.seed);
+  const fillRatio = DEFAULT_CA_FILL_RATIO;
+  const alive: boolean[][] = Array.from(
+    { length: height },
+    () => Array.from({ length: width }, () => random() < fillRatio),
+  );
+
+  // Mirror algorithm anchor: entry cell starts alive.
+  alive[0][0] = true;
+
+  const grid = createCarvingBaseStep(width, height);
+
+  for (let r = 0; r < height; r++) {
+    for (let c = 0; c < width; c++) {
+      if (!alive[r][c]) continue;
+
+      grid[2 * r + 1][2 * c + 1] = 1;
+
+      if (r + 1 < height && alive[r + 1][c]) {
+        grid[2 * r + 2][2 * c + 1] = 1;
+      }
+      if (c + 1 < width && alive[r][c + 1]) {
+        grid[2 * r + 1][2 * c + 2] = 1;
+      }
+    }
+  }
+
+  return grid;
+}
+
+function createZeroStateStep(variant: AlgoVariant, width: number, height: number): MazeMatrix {
+  if (variant.algorithm === Algorithm.RECURSIVE_DIVISION) {
+    return createOpenFieldStep(width, height);
+  }
+
+  if (variant.algorithm === Algorithm.VORONOI_DIAGRAM) {
+    return createCellCentersStep(width, height);
+  }
+
+  if (variant.algorithm === Algorithm.CELLULAR_AUTOMATON) {
+    return createCellularAutomatonSeedStep(variant, width, height);
+  }
+
+  return createCarvingBaseStep(width, height);
+}
+
 function buildSteps(variant: AlgoVariant, width: number, height: number): MazeMatrix[] {
-  return generateMazeSteps({
+  const steps = generateMazeSteps({
     width,
     height,
     algorithm: variant.algorithm,
@@ -250,6 +360,9 @@ function buildSteps(variant: AlgoVariant, width: number, height: number): MazeMa
     roomsConnectionMode: variant.roomsConnectionMode,
     voronoiPreset: variant.voronoiPreset,
   });
+
+  // Step 1 should always show untouched maze state.
+  return [createZeroStateStep(variant, width, height), ...steps];
 }
 
 // ── Add / remove panels ───────────────────────────────────────────────────
@@ -288,7 +401,14 @@ function removePanel(key: string): void {
 // ── Regenerate existing panels when size changes ──────────────────────────
 
 function regenerateAll(): void {
-  if (algoMap.size === 0) return;
+  const selectedKeys = getSelectedAlgorithmKeys();
+  syncAlgoMapToSelection(selectedKeys);
+  if (algoMap.size === 0) {
+    recalcMaxSteps();
+    currentStep = 0;
+    updatePlaybar();
+    return;
+  }
   const wasPlaying = isPlaying;
   stopAnimation();
 
@@ -314,14 +434,16 @@ function generate(): void {
   stopAnimation();
   algoMap.clear();
   panelGrid.innerHTML = '';
+  recalcMaxSteps();
+  updatePlaybar();
 
   const width  = getWidth();
   const height = getHeight();
   widthInput.value  = String(width);
   heightInput.value = String(height);
 
-  for (const cb of ALL_CHECKBOXES) {
-    if (cb.checked) addPanel(cb.value, width, height);
+  for (const key of getSelectedAlgorithmKeys()) {
+    addPanel(key, width, height);
   }
 
   currentStep = 0;
@@ -397,3 +519,5 @@ speedSlider.addEventListener('input', () => {
 
 // Initialise frame interval from default slider value
 frameInterval = speedToInterval(parseInt(speedSlider.value, 10));
+
+
