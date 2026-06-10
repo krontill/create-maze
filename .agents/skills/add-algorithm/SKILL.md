@@ -50,18 +50,30 @@ Create `src/algorithms/<name>.ts`. The class must implement `IMazeGenerator` and
  */
 
 import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
-import { createGrid, markCell, carvePassage } from '../utils/grid';
-import { createRandom } from '../utils/random';
+import { createGrid, markCell, carvePassage, deepCopyMatrix } from '../utils/grid';
+import { createRandom, shuffle } from '../utils/random';
 
 export class MyAlgoGenerator implements IMazeGenerator {
-  generate(config: MazeConfig): MazeMatrix {
+  private _run(config: MazeConfig, onStep?: (grid: MazeMatrix) => void): MazeMatrix {
     const { width, height, seed } = config;
     const random = createRandom(seed);
     const grid = createGrid(width, height);
 
     // … algorithm logic …
+    // Use shuffle(...) where randomized direction/order is needed.
+    onStep?.(grid);
 
     return grid;
+  }
+
+  generate(config: MazeConfig): MazeMatrix {
+    return this._run(config);
+  }
+
+  steps(config: MazeConfig): MazeMatrix[] {
+    const snapshots: MazeMatrix[] = [];
+    this._run(config, (grid) => snapshots.push(deepCopyMatrix(grid)));
+    return snapshots;
   }
 }
 ```
@@ -93,7 +105,7 @@ const GENERATORS: Record<Algorithm, IMazeGenerator> = {
 
 ### 4 — Write tests (`tests/<name>.test.ts`)
 
-Import only from the public API (`../src/index`). Use the `isFullyConnected` helper from `../tests/helpers.ts`.
+Import only from the public API (`../src/index`). Use the `isFullyConnected` helper from `./helpers`.
 
 **Minimum test surface:**
 - Matrix dimensions are `(2H+1) × (2W+1)`.
@@ -122,6 +134,16 @@ describe('MyAlgo', () => {
     const a = generateMaze({ width: 8, height: 8, algorithm: Algorithm.MY_ALGO, seed: 42 });
     const b = generateMaze({ width: 8, height: 8, algorithm: Algorithm.MY_ALGO, seed: 42 });
     expect(a).toEqual(b);
+  });
+
+  it('works with non-square mazes (wide)', () => {
+    const m = generateMaze({ width: 10, height: 5, algorithm: Algorithm.MY_ALGO, seed: 7 });
+    expect(isFullyConnected(m, 10, 5)).toBe(true);
+  });
+
+  it('works with non-square mazes (tall)', () => {
+    const m = generateMaze({ width: 5, height: 10, algorithm: Algorithm.MY_ALGO, seed: 7 });
+    expect(isFullyConnected(m, 5, 10)).toBe(true);
   });
 });
 ```
@@ -160,6 +182,7 @@ const ALGORITHMS: AlgorithmDef[] = [
 Notes:
 - Keep labels human-readable and consistent with the sandbox demo card title.
 - Choose a distinct color for readability in overlap mode.
+- `AlgorithmDef` also supports optional per-variant fields (`seed`, `caRule`, `fractalMode`, `roomsConnectionMode`, `voronoiPreset`) when needed.
 - No `sandbox/compare.html` structural changes are required for normal algorithm additions.
 
 ### 7 — Verify
@@ -174,10 +197,12 @@ pnpm build         # library must build without type errors
 ## Architecture constraints
 
 - **No framework imports.** Never import `document`, `window`, `canvas`, `React`, `Vue`, or any HTML/CSS. Core files are `src/` only.
+- **Separation of concerns.** Never mix generation logic, rendering logic, and styling in the same module.
 - **No side effects** at module level.
 - **No `any` or `unknown`** types. Be explicit everywhere.
 - **Pure functions** wherever possible. Encapsulate state inside the class method.
 - **Document Big O.** Every algorithm class must have a JSDoc comment with time and space complexity.
+- **Public API updates must stay typed and documented.** If you change exported API surface (e.g. enum members), keep types and JSDoc in sync.
 - **Zero runtime dependencies.** Do not add packages to `dependencies` in `package.json`.
 
 ---
@@ -188,8 +213,9 @@ Before finishing, verify:
 
 - [ ] `Algorithm.<MEMBER>` added to enum in `src/types.ts`
 - [ ] `src/algorithms/<name>.ts` exists and exports a class implementing `IMazeGenerator`
+- [ ] Class implements both `generate(config)` and `steps(config)`
 - [ ] Class imported and added to `GENERATORS` in `src/index.ts`
-- [ ] Tests written in `tests/<name>.test.ts` — dimensions, connectivity, determinism
+- [ ] Tests written in `tests/<name>.test.ts` — dimensions, connectivity, determinism, non-square coverage
 - [ ] Demo card added to `sandbox/index.html` with matching `data-algo` value
 - [ ] Algorithm added to `ALGORITHMS` in `sandbox/compare.ts` (algo, label, color)
 - [ ] `pnpm test` passes
