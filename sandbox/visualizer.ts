@@ -1,5 +1,6 @@
 import { generateMazeSteps, Algorithm } from '../src/index';
 import type { MazeMatrix } from '../src/index';
+import type { CellularAutomatonRule } from '../src/index';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -7,6 +8,7 @@ interface AlgoVariant {
   algorithm: Algorithm;
   label: string;
   seed?: number;
+  caRule?: CellularAutomatonRule;
   fractalMode?: 'tile-substitution' | 'quadtree-division';
   roomsConnectionMode?: 'manhattan-l' | 'random-walk' | 'nearest-mst';
   voronoiPreset?: 'natural' | 'structured';
@@ -48,7 +50,9 @@ const VARIANT_MAP: Record<string, AlgoVariant> = {
   'rooms-manhattan':        { algorithm: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Manhattan)', roomsConnectionMode: 'manhattan-l' },
   'rooms-random-walk':      { algorithm: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Walk)', roomsConnectionMode: 'random-walk' },
   'rooms-nearest-mst':      { algorithm: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (MST)', roomsConnectionMode: 'nearest-mst' },
-  'cellular-automaton':     { algorithm: Algorithm.CELLULAR_AUTOMATON,  label: 'Cellular Automaton' },
+  'cellular-automaton':     { algorithm: Algorithm.CELLULAR_AUTOMATON,  label: 'Cellular Automaton (B5/S45)', caRule: 'b5s45' },
+  'cellular-automaton-maze': { algorithm: Algorithm.CELLULAR_AUTOMATON, label: 'Maze (B3/S12345)', caRule: 'maze' },
+  'cellular-automaton-mazectric': { algorithm: Algorithm.CELLULAR_AUTOMATON, label: 'Mazectric (B3/S1234)', caRule: 'mazectric' },
 };
 
 /** All sidebar checkboxes in document order — used for panel ordering. */
@@ -241,6 +245,7 @@ function buildSteps(variant: AlgoVariant, width: number, height: number): MazeMa
     height,
     algorithm: variant.algorithm,
     seed: variant.seed,
+    caRule: variant.caRule,
     fractalMode: variant.fractalMode,
     roomsConnectionMode: variant.roomsConnectionMode,
     voronoiPreset: variant.voronoiPreset,

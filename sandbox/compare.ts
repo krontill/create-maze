@@ -1,5 +1,6 @@
 import { generateMaze, Algorithm } from '../src/index';
 import type { MazeMatrix } from '../src/index';
+import type { CellularAutomatonRule } from '../src/index';
 import type { RoomsConnectionMode } from '../src/index';
 import type { VoronoiPreset } from '../src/index';
 
@@ -10,6 +11,7 @@ interface AlgorithmDef {
   label: string;
   color: string;
   seed?: number;
+  caRule?: CellularAutomatonRule;
   fractalMode?: 'tile-substitution' | 'quadtree-division';
   roomsConnectionMode?: RoomsConnectionMode;
   voronoiPreset?: VoronoiPreset;
@@ -53,7 +55,9 @@ const ALGORITHMS: AlgorithmDef[] = [
   { algo: Algorithm.HOUSTONS,          label: "Houston's",            color: '#d946ef' },
   { algo: Algorithm.TREMAUX,           label: 'Tremaux',              color: '#f59e0b' },
   { algo: Algorithm.SPANNING_TREE_BFS, label: 'Spanning Tree (BFS)',  color: '#b45309' },
-  { algo: Algorithm.CELLULAR_AUTOMATON, label: 'Cellular Automaton',   color: '#4ade80' },
+  { algo: Algorithm.CELLULAR_AUTOMATON, label: 'Cellular Automaton (B5/S45)', color: '#4ade80', caRule: 'b5s45' },
+  { algo: Algorithm.CELLULAR_AUTOMATON, label: 'Maze (B3/S12345)', color: '#22c55e', caRule: 'maze' },
+  { algo: Algorithm.CELLULAR_AUTOMATON, label: 'Mazectric (B3/S1234)', color: '#16a34a', caRule: 'mazectric' },
 ];
 
 // ---------- data helpers ----------
@@ -63,13 +67,14 @@ function generateAllMazes(
   width: number,
   height: number,
 ): TimedMaze[] {
-  return selected.map(({ algo, label, seed, fractalMode, roomsConnectionMode, voronoiPreset }) => {
+  return selected.map(({ algo, label, seed, caRule, fractalMode, roomsConnectionMode, voronoiPreset }) => {
     const startedAt = performance.now();
     const maze = generateMaze({
       width,
       height,
       algorithm: algo,
       seed,
+      caRule,
       fractalMode,
       roomsConnectionMode,
       voronoiPreset,

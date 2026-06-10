@@ -1,9 +1,11 @@
 import { generateMaze, Algorithm } from '../src/index';
 import type { MazeMatrix } from '../src/index';
+import type { CellularAutomatonRule } from '../src/index';
 
 const CELL_PX = 8;
 const SPIRAL_SEEDS = [0, 1, 2] as const;
 type FractalMode = 'tile-substitution' | 'quadtree-division';
+type CellularAutomatonRulePreset = CellularAutomatonRule;
 type RoomsConnectionMode = 'manhattan-l' | 'random-walk' | 'nearest-mst';
 type VoronoiPreset = 'natural' | 'structured';
 
@@ -17,6 +19,16 @@ function getFractalMode(section: HTMLElement): FractalMode | undefined {
   const mode = section.dataset['fractalMode'];
   if (mode === 'tile-substitution' || mode === 'quadtree-division') {
     return mode;
+  }
+  return undefined;
+}
+
+function getCellularAutomatonRule(
+  section: HTMLElement,
+): CellularAutomatonRulePreset | undefined {
+  const rule = section.dataset['caRule'];
+  if (rule === 'b5s45' || rule === 'maze' || rule === 'mazectric') {
+    return rule;
   }
   return undefined;
 }
@@ -60,6 +72,7 @@ function renderMaze(matrix: MazeMatrix, container: HTMLElement): void {
 
 function initSection(section: HTMLElement): void {
   const algo = section.dataset['algo'] as Algorithm;
+  const caRule = getCellularAutomatonRule(section);
   const fractalMode = getFractalMode(section);
   const wInput = section.querySelector<HTMLInputElement>('.w-input')!;
   const hInput = section.querySelector<HTMLInputElement>('.h-input')!;
@@ -146,7 +159,7 @@ function initSection(section: HTMLElement): void {
     }
 
     const voronoiPreset = getVoronoiPreset(section);
-    const matrix = generateMaze({ width, height, algorithm: algo, fractalMode, voronoiPreset });
+    const matrix = generateMaze({ width, height, algorithm: algo, caRule, fractalMode, voronoiPreset });
     renderMaze(matrix, mazeEl);
   }
 

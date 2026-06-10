@@ -74,4 +74,50 @@ describe('CellularAutomaton', () => {
     expect(() => generateMaze({ width: 5, height: 5, algorithm: Algorithm.CELLULAR_AUTOMATON, caGenerations: 0 })).toThrow(RangeError);
     expect(() => generateMaze({ width: 5, height: 5, algorithm: Algorithm.CELLULAR_AUTOMATON, caGenerations: -1 })).toThrow(RangeError);
   });
+
+  it('supports alternate caRule presets deterministically', () => {
+    const mazeA = generateMaze({ width: 10, height: 10, algorithm: Algorithm.CELLULAR_AUTOMATON, seed: 17, caRule: 'maze' });
+    const mazeB = generateMaze({ width: 10, height: 10, algorithm: Algorithm.CELLULAR_AUTOMATON, seed: 17, caRule: 'maze' });
+    const mazectric = generateMaze({ width: 10, height: 10, algorithm: Algorithm.CELLULAR_AUTOMATON, seed: 17, caRule: 'mazectric' });
+
+    expect(mazeA).toEqual(mazeB);
+    expect(mazeA).not.toEqual(mazectric);
+    expect(isFullyConnected(mazeA, 10, 10)).toBe(true);
+    expect(isFullyConnected(mazectric, 10, 10)).toBe(true);
+  });
+
+  it('respects caRule in generateMazeSteps', () => {
+    const mazeSteps = generateMazeSteps({
+      width: 10,
+      height: 10,
+      algorithm: Algorithm.CELLULAR_AUTOMATON,
+      seed: 23,
+      caRule: 'maze',
+    });
+    const mazectricSteps = generateMazeSteps({
+      width: 10,
+      height: 10,
+      algorithm: Algorithm.CELLULAR_AUTOMATON,
+      seed: 23,
+      caRule: 'mazectric',
+    });
+
+    const mazeLast = mazeSteps[mazeSteps.length - 1];
+    const mazectricLast = mazectricSteps[mazectricSteps.length - 1];
+
+    expect(mazeSteps.length).toBeGreaterThan(0);
+    expect(mazectricSteps.length).toBeGreaterThan(0);
+    expect(mazeLast).not.toEqual(mazectricLast);
+    expect(isFullyConnected(mazeLast, 10, 10)).toBe(true);
+    expect(isFullyConnected(mazectricLast, 10, 10)).toBe(true);
+  });
+
+  it('throws TypeError for invalid caRule', () => {
+    expect(() => generateMaze({
+      width: 5,
+      height: 5,
+      algorithm: Algorithm.CELLULAR_AUTOMATON,
+      caRule: 'invalid-rule' as never,
+    })).toThrow(TypeError);
+  });
 });

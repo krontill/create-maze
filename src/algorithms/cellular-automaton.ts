@@ -2,10 +2,11 @@
  * Cellular Automaton maze generator.
  *
  * Grows organic, cave-like passages by seeding a random alive/dead grid and
- * iterating Moore-neighbourhood (B5/S45) rules for a fixed number of
+ * iterating a configurable Moore-neighbourhood cellular automaton rule for a
+ * fixed number of
  * generations. Dead cells with ≥ 5 alive neighbours are born; alive cells
- * with ≥ 4 alive neighbours survive. Out-of-bounds neighbours count as alive
- * to reinforce cave borders. A Prim's-style random frontier expansion then
+ * with ≥ 4 alive neighbours survive by default. Out-of-bounds neighbours count
+ * as alive to reinforce cave borders. A Prim's-style random frontier expansion then
  * repairs connectivity, connecting any unreachable cell to its nearest
  * reachable neighbour via organic, branchy corridors.
  *
@@ -14,7 +15,12 @@
  *                              output matrix.
  */
 
-import type { IMazeGenerator, MazeConfig, MazeMatrix } from '../types';
+import type {
+  CellularAutomatonRule,
+  IMazeGenerator,
+  MazeConfig,
+  MazeMatrix,
+} from '../types';
 import { createGrid, markCell, deepCopyMatrix } from '../utils/grid';
 import { createRandom } from '../utils/random';
 
@@ -23,6 +29,9 @@ const DEFAULT_FILL_RATIO = 0.45;
 
 /** Default number of CA generations to apply before converting to a maze matrix. */
 const DEFAULT_GENERATIONS = 4;
+
+/** Default CA rule preset. */
+const DEFAULT_RULE: CellularAutomatonRule = 'b5s45';
 
 /** Cardinal directions for wall-opening and connectivity repair. */
 const DIRECTIONS: [number, number][] = [
@@ -58,6 +67,32 @@ function countAliveNeighbours(
     }
   }
   return count;
+}
+
+/**
+ * Apply one configured CA rule to a cell with `n` alive neighbors.
+ *
+ * Time complexity:  O(1)
+ * Space complexity: O(1)
+ */
+function applyRule(
+  rule: CellularAutomatonRule,
+  isAlive: boolean,
+  aliveNeighbours: number,
+): boolean {
+  if (rule === 'maze') {
+    return isAlive
+      ? aliveNeighbours >= 1 && aliveNeighbours <= 5
+      : aliveNeighbours === 3;
+  }
+
+  if (rule === 'mazectric') {
+    return isAlive
+      ? aliveNeighbours >= 1 && aliveNeighbours <= 4
+      : aliveNeighbours === 3;
+  }
+
+  return isAlive ? aliveNeighbours >= 4 : aliveNeighbours >= 5;
 }
 
 /**
@@ -222,6 +257,7 @@ export class CellularAutomatonGenerator implements IMazeGenerator {
     const { width, height, seed } = config;
     const fillRatio = config.caFillRatio ?? DEFAULT_FILL_RATIO;
     const generations = config.caGenerations ?? DEFAULT_GENERATIONS;
+    const rule = config.caRule ?? DEFAULT_RULE;
     const random = createRandom(seed);
 
     // Phase 1: Seed the alive grid at fillRatio density.
@@ -231,7 +267,7 @@ export class CellularAutomatonGenerator implements IMazeGenerator {
     );
     alive[0][0] = true; // Anchor the entry cell.
 
-    // Phase 2: Apply B5/S45 Moore-neighbourhood rules.
+    // Phase 2: Apply the configured Moore-neighbourhood rule.
     for (let gen = 0; gen < generations; gen++) {
       const next: boolean[][] = Array.from(
         { length: height },
@@ -241,8 +277,7 @@ export class CellularAutomatonGenerator implements IMazeGenerator {
       for (let r = 0; r < height; r++) {
         for (let c = 0; c < width; c++) {
           const n = countAliveNeighbours(alive, r, c, height, width);
-          // Survive with ≥ 4 neighbours; born with ≥ 5 neighbours.
-          next[r][c] = alive[r][c] ? n >= 4 : n >= 5;
+          next[r][c] = applyRule(rule, alive[r][c], n);
         }
       }
 

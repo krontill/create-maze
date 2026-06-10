@@ -9,6 +9,7 @@
 
 import { Algorithm, Format } from './types';
 import type {
+  CellularAutomatonRule,
   FractalMode,
   RoomsConnectionMode,
   VoronoiPreset,
@@ -41,6 +42,7 @@ import { matrixToGraph } from './utils/graph';
 // Re-export enums (values) and types (types only)
 export { Algorithm, Format };
 export type {
+  CellularAutomatonRule,
   FractalMode,
   RoomsConnectionMode,
   VoronoiPreset,
@@ -159,6 +161,16 @@ function validateConfig(config: MazeConfig): void {
   ) {
     throw new RangeError(
       `MazeConfig.caGenerations must be a positive integer, got ${config.caGenerations}`,
+    );
+  }
+  if (
+    config.caRule !== undefined &&
+    config.caRule !== 'b5s45' &&
+    config.caRule !== 'maze' &&
+    config.caRule !== 'mazectric'
+  ) {
+    throw new TypeError(
+      `MazeConfig.caRule must be one of [b5s45, maze, mazectric], got "${config.caRule}"`,
     );
   }
 }

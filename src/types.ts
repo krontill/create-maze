@@ -37,6 +37,9 @@ export type RoomsConnectionMode = 'manhattan-l' | 'random-walk' | 'nearest-mst';
 /** Voronoi Diagram regional layout presets. */
 export type VoronoiPreset = 'natural' | 'structured';
 
+/** Cellular Automaton rule presets. */
+export type CellularAutomatonRule = 'b5s45' | 'maze' | 'mazectric';
+
 /** Supported output formats. */
 export enum Format {
   MATRIX = 'matrix',
@@ -100,6 +103,16 @@ export interface MazeConfig {
    * @defaultValue 4
    */
   caGenerations?: number;
+  /**
+   * Cellular Automaton rule preset used by Algorithm.CELLULAR_AUTOMATON.
+   *
+   * - 'b5s45'      = dead cell born with >= 5 neighbors; live cell survives with >= 4
+   * - 'maze'       = B3/S12345
+   * - 'mazectric'  = B3/S1234
+   *
+   * @defaultValue 'b5s45'
+   */
+  caRule?: CellularAutomatonRule;
 }
 
 /**
