@@ -42,6 +42,14 @@ const graph = generateMaze({ width: 5, height: 5, algorithm: Algorithm.PRIMS, fo
 | `fractalMode` | `'tile-substitution' \| 'quadtree-division'` | — | Fractal Tessellation mode (default: `'tile-substitution'`) |
 | `roomsConnectionMode` | `'manhattan-l' \| 'random-walk' \| 'nearest-mst'` | — | Rooms & Corridors connector strategy (default: `'manhattan-l'`) |
 | `voronoiPreset` | `'natural' \| 'structured'` | — | Voronoi Diagram preset (default: `'natural'`) |
+| `caFillRatio` | `number` | — | Cellular Automaton initial alive-cell fill ratio in `(0, 1)` (default: `0.45`) |
+| `caGenerations` | `number` | — | Cellular Automaton generation count, positive integer (default: `4`) |
+| `caRule` | `'b5s45' \| 'maze' \| 'mazectric'` | — | Cellular Automaton rule preset (default: `'b5s45'`) |
+
+### `generateMazeSteps(config: MazeConfig): MazeMatrix[]`
+
+Returns ordered intermediate matrix snapshots for animation/progression use-cases.
+The last snapshot equals `generateMaze(config)` in matrix format.
 
 ### Algorithms
 
@@ -65,6 +73,7 @@ const graph = generateMaze({ width: 5, height: 5, algorithm: Algorithm.PRIMS, fo
 | `Algorithm.FRACTAL_TESSELLATION` | Fractal Tessellation (tile/quadtree modes) | O(W×H) | O(W×H) |
 | `Algorithm.ROOMS_AND_CORRIDORS` | Room placement with corridor connectors | O(W×H + R²) | O(W×H + R²) |
 | `Algorithm.VORONOI_DIAGRAM` | Voronoi regions + spanning connectors (natural/structured presets) | O(W×H×S) | O(W×H + S) |
+| `Algorithm.CELLULAR_AUTOMATON` | Cellular automaton cave generation with connectivity repair | O(G×W×H) | O(W×H) |
 
 ### Output Formats
 

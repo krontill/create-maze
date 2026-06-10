@@ -18,14 +18,15 @@ Built with Vite (Library mode). Dual ESM/CJS output with automatic `.d.ts` decla
 
 ## Core Entities & Interfaces
 When generating code, adhere to these conceptual data structures:
-- **MazeConfig:** An interface accepting `width` (number), `height` (number), `algorithm` (enum), and optionally `format` (enum): The desired output format (e.g., `'matrix'`, `'graph'`).
+- **MazeConfig:** An interface accepting `width` (number), `height` (number), `algorithm` (enum), and optionally `format` (enum), `seed` (number), `fractalMode` (`'tile-substitution' | 'quadtree-division'`), `roomsConnectionMode` (`'manhattan-l' | 'random-walk' | 'nearest-mst'`), `voronoiPreset` (`'natural' | 'structured'`), `caFillRatio` (number in `(0, 1)`), `caGenerations` (positive integer), and `caRule` (`'b5s45' | 'maze' | 'mazectric'`).
 - **Output Format:** Algorithms should output a standardized format. By default, a 2D numeric array (`number[][]`), where `0` represents a wall and `1` represents a path.
 - **Pathfinder Output:** Solving algorithms should return an array of coordinates: `Array<{x: number, y: number}>`.
 
 ## Public API
-- `Algorithm` currently includes `DFS`, `PRIMS`, `KRUSKALS`, `BINARY_TREE`, `WILSONS`, `ALDOUS_BRODER`, `ELLERS`, `SIDEWINDER`, `SPIRAL_BACKTRACKER`, `HUNT_AND_KILL`, `RECURSIVE_DIVISION`, `GROWING_TREE`, `HOUSTONS`, `TREMAUX`, `FRACTAL_TESSELLATION`, `ROOMS_AND_CORRIDORS`, `VORONOI_DIAGRAM`, and `SPANNING_TREE_BFS`.
+- `Algorithm` currently includes `DFS`, `PRIMS`, `KRUSKALS`, `BINARY_TREE`, `WILSONS`, `ALDOUS_BRODER`, `ELLERS`, `SIDEWINDER`, `SPIRAL_BACKTRACKER`, `HUNT_AND_KILL`, `RECURSIVE_DIVISION`, `GROWING_TREE`, `HOUSTONS`, `TREMAUX`, `FRACTAL_TESSELLATION`, `ROOMS_AND_CORRIDORS`, `VORONOI_DIAGRAM`, `SPANNING_TREE_BFS`, and `CELLULAR_AUTOMATON`.
 - `Format` currently includes `MATRIX` and `GRAPH`.
 - `generateMaze()` returns `MazeMatrix` by default, or `MazeGraph` when called with `format: Format.GRAPH`.
+- `generateMazeSteps()` returns `MazeMatrix[]` snapshots for progressive/animated generation views.
 
 ## Architectural Patterns
 - Use the **Strategy Pattern** for generating mazes. Different algorithms (DFS, Prim's, Kruskal's) must implement a common `IMazeGenerator` interface.
