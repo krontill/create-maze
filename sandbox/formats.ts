@@ -153,6 +153,41 @@ function renderGraphSvg(
   container.innerHTML = `<g class="edges">${lines}</g><g class="nodes">${nodes}</g>`;
 }
 
+function appendSummaryCard(
+  container: HTMLDivElement,
+  label: string,
+  value: string,
+): void {
+  const card = document.createElement('div');
+  card.className = 'summary-card';
+
+  const labelEl = document.createElement('span');
+  labelEl.textContent = label;
+
+  const valueEl = document.createElement('strong');
+  valueEl.textContent = value;
+
+  card.appendChild(labelEl);
+  card.appendChild(valueEl);
+  container.appendChild(card);
+}
+
+function renderSummary(
+  container: HTMLDivElement,
+  algorithmLabel: string,
+  seed: number,
+  matrixRows: number,
+  matrixCols: number,
+  nodeCount: number,
+  edgeCount: number,
+): void {
+  container.replaceChildren();
+  appendSummaryCard(container, 'Algorithm', algorithmLabel);
+  appendSummaryCard(container, 'Seed', String(seed));
+  appendSummaryCard(container, 'Matrix Size', `${matrixRows} × ${matrixCols}`);
+  appendSummaryCard(container, 'Graph', `${nodeCount} nodes / ${edgeCount} edges`);
+}
+
 function updateControlVisibility(): void {
   const algorithm = parseAlgorithm(algorithmInput.value);
   fractalControl.hidden = algorithm !== Algorithm.FRACTAL_TESSELLATION;
@@ -200,12 +235,15 @@ function generate(): void {
   renderGraphSvg(width, height, preview.graph, preview.graphLinks, graphSvgEl);
   matrixTextEl.textContent = preview.matrixText;
   graphTextEl.textContent = preview.graphText;
-  summaryEl.innerHTML = [
-    `<div class="summary-card"><span>Algorithm</span><strong>${algorithmLabel}</strong></div>`,
-    `<div class="summary-card"><span>Seed</span><strong>${config.seed}</strong></div>`,
-    `<div class="summary-card"><span>Matrix Size</span><strong>${matrixRows} × ${matrixCols}</strong></div>`,
-    `<div class="summary-card"><span>Graph</span><strong>${preview.graph.length} nodes / ${edgeCount} edges</strong></div>`,
-  ].join('');
+  renderSummary(
+    summaryEl,
+    algorithmLabel,
+    config.seed,
+    matrixRows,
+    matrixCols,
+    preview.graph.length,
+    edgeCount,
+  );
 }
 
 updateControlVisibility();
