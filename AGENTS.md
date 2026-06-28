@@ -45,6 +45,11 @@ src/
   utils/         # Shared grid, graph, and random helpers
   index.ts       # Public API entry point
   types.ts       # Public enums, interfaces, and output types
+sandbox/
+  index.html     # Demo gallery page
+  compare.html   # Algorithm comparison page
+  visualizer.html # Step-by-step generator page
+  formats.html   # MATRIX + GRAPH explorer for one seeded maze
 ```
 
 ## Dot-Folder Policy
