@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>maze-builder · Formats Explorer</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: system-ui, sans-serif;
+        background: #0f0f14;
+        color: #e0dcd6;
+        min-height: 100vh;
+        padding: 1.25rem 1.5rem 2rem;
+      }
+
+      header {
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.85rem;
+      }
+
+      header h1 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #f5f0ea;
+      }
+
+      header nav {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      header nav a {
+        font-size: 0.84rem;
+        color: #6666aa;
+        text-decoration: none;
+        border-bottom: 1px solid #6666aa44;
+        padding-bottom: 1px;
+      }
+
+      .intro {
+        max-width: 920px;
+        color: #9893aa;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .controls,
+      .summary,
+      .panel {
+        background: #1a1a24;
+        border: 1px solid #2a2a38;
+        border-radius: 12px;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        align-items: end;
+      }
+
+      .controls label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        font-size: 0.78rem;
+        color: #9e99b3;
+      }
+
+      .controls input,
+      .controls select,
+      .controls button {
+        background: #0f0f14;
+        color: #e0dcd6;
+        border: 1px solid #33384d;
+        border-radius: 6px;
+        padding: 0.45rem 0.55rem;
+        font-size: 0.86rem;
+      }
+
+      .controls input,
+      .controls select {
+        min-width: 120px;
+      }
+
+      .controls input[type="number"] {
+        width: 92px;
+      }
+
+      .controls button {
+        cursor: pointer;
+        background: #2e2e44;
+        border-color: #44446a;
+        color: #c8c4f0;
+      }
+
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.75rem;
+        padding: 0.9rem 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .summary-card {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+
+      .summary-card span {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6f6a86;
+      }
+
+      .summary-card strong {
+        font-size: 0.94rem;
+        color: #f3eee7;
+      }
+
+      .panels {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .panel {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        min-width: 0;
+      }
+
+      .panel h2 {
+        font-size: 1rem;
+        color: #f2ede6;
+      }
+
+      .panel p {
+        font-size: 0.82rem;
+        color: #9792a9;
+        line-height: 1.5;
+      }
+
+      .matrix-wrap,
+      .graph-wrap,
+      pre {
+        background: #111119;
+        border: 1px solid #242436;
+        border-radius: 10px;
+      }
+
+      .matrix-wrap,
+      .graph-wrap {
+        overflow: auto;
+        padding: 0.75rem;
+      }
+
+      #matrix-maze {
+        display: grid;
+        width: fit-content;
+        gap: 0;
+        line-height: 0;
+      }
+
+      #matrix-maze > div {
+        width: 12px;
+        height: 12px;
+      }
+
+      #matrix-maze .wall { background: #1f2230; }
+      #matrix-maze .path { background: #f0ede8; }
+
+      #graph-output-visual {
+        width: 100%;
+        min-height: 280px;
+        display: block;
+      }
+
+      #graph-output-visual .edges line {
+        stroke: #7077c6;
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+
+      #graph-output-visual .nodes circle {
+        fill: #f0ede8;
+        stroke: #3d4264;
+        stroke-width: 1.5;
+      }
+
+      #graph-output-visual .nodes text {
+        font-size: 7px;
+        fill: #14151d;
+        font-weight: 700;
+      }
+
+      pre {
+        max-height: 320px;
+        overflow: auto;
+        padding: 0.9rem;
+        font-size: 0.74rem;
+        line-height: 1.55;
+        color: #cfc9dd;
+        white-space: pre;
+      }
+
+      @media (max-width: 960px) {
+        .summary,
+        .panels {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Formats Explorer</h1>
+      <nav>
+        <a href="/index.html">Demo</a>
+        <a href="/compare.html">Compare</a>
+        <a href="/visualizer.html">Step-by-Step</a>
+        <a href="/formats.html">Formats</a>
+      </nav>
+    </header>
+
+    <p class="intro">
+      One seeded maze. Two public outputs. This page renders same configuration as `Format.MATRIX`
+      and `Format.GRAPH`, so matrix grid, adjacency data, and graph topology stay in sync.
+    </p>
+
+    <section class="controls">
+      <label>
+        Algorithm
+        <select id="algorithm-input">
+          <option value="dfs">Depth-First Search</option>
+          <option value="prims">Prim's</option>
+          <option value="kruskals">Kruskal's</option>
+          <option value="binary-tree">Binary Tree</option>
+          <option value="wilsons">Wilson's</option>
+          <option value="aldous-broder">Aldous-Broder</option>
+          <option value="ellers">Eller's</option>
+          <option value="sidewinder">Sidewinder</option>
+          <option value="spiral-backtracker">Spiral Backtracker</option>
+          <option value="hunt-and-kill">Hunt-and-Kill</option>
+          <option value="recursive-division">Recursive Division</option>
+          <option value="growing-tree">Growing Tree</option>
+          <option value="houstons">Houston's</option>
+          <option value="tremaux">Trémaux</option>
+          <option value="fractal-tessellation">Fractal Tessellation</option>
+          <option value="voronoi-diagram">Voronoi Diagram</option>
+          <option value="rooms-and-corridors">Rooms & Corridors</option>
+          <option value="spanning-tree-bfs">Spanning Tree BFS</option>
+          <option value="cellular-automaton">Cellular Automaton</option>
+        </select>
+      </label>
+
+      <label>
+        Width
+        <input id="width-input" type="number" min="2" max="24" value="10" />
+      </label>
+
+      <label>
+        Height
+        <input id="height-input" type="number" min="2" max="18" value="8" />
+      </label>
+
+      <label>
+        Seed
+        <input id="seed-input" type="number" value="42" />
+      </label>
+
+      <label id="fractal-control" hidden>
+        Fractal Mode
+        <select id="fractal-mode-input">
+          <option value="tile-substitution">Tile Substitution</option>
+          <option value="quadtree-division">Quadtree Division</option>
+        </select>
+      </label>
+
+      <label id="rooms-control" hidden>
+        Rooms Mode
+        <select id="rooms-mode-input">
+          <option value="manhattan-l">Manhattan-L</option>
+          <option value="random-walk">Random Walk</option>
+          <option value="nearest-mst">Nearest MST</option>
+        </select>
+      </label>
+
+      <label id="voronoi-control" hidden>
+        Voronoi Preset
+        <select id="voronoi-preset-input">
+          <option value="natural">Natural</option>
+          <option value="structured">Structured</option>
+        </select>
+      </label>
+
+      <label id="ca-control" hidden>
+        CA Rule
+        <select id="ca-rule-input">
+          <option value="b5s45">B5/S45</option>
+          <option value="maze">Maze</option>
+          <option value="mazectric">Mazectric</option>
+        </select>
+      </label>
+
+      <button id="regen-btn" type="button">Regenerate</button>
+    </section>
+
+    <section class="summary" id="summary" aria-live="polite"></section>
+
+    <section class="panels">
+      <article class="panel">
+        <h2>Format.MATRIX</h2>
+        <p>Grid output. Walls = `0`, passages = `1`. Visual uses exact matrix cells.</p>
+        <div class="matrix-wrap">
+          <div id="matrix-maze"></div>
+        </div>
+        <pre id="matrix-output"></pre>
+      </article>
+
+      <article class="panel">
+        <h2>Format.GRAPH</h2>
+        <p>One node per maze cell. Lines show passage-connected neighbors from adjacency list.</p>
+        <div class="graph-wrap">
+          <svg id="graph-output-visual" aria-label="Maze graph visualization"></svg>
+        </div>
+        <pre id="graph-output"></pre>
+      </article>
+    </section>
+
+    <script type="module" src="/formats.ts"></script>
+  </body>
+</html>

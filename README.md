@@ -91,6 +91,13 @@ yarn typecheck      # tsc --noEmit
 yarn build          # Vite library build → dist/
 ```
 
+## Demo Pages
+
+- `/index.html` - algorithm gallery with per-algorithm maze cards
+- `/compare.html` - overlap comparison across selected algorithms
+- `/visualizer.html` - step-by-step generation snapshots
+- `/formats.html` - one seeded maze rendered in both `Format.MATRIX` and `Format.GRAPH`
+
 ## License
 
 MIT
