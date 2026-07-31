@@ -1,23 +1,25 @@
 ---
 name: security-check
-description: Review changed files for security vulnerabilities before merging or deploying. Use when the user wants a security review, vulnerability scan, or OWASP check on changed code.
-argument-hint: []
-allowed-tools: Bash, Read, Glob, Grep
-effort: high
+description: >
+  Review changed files for security vulnerabilities before merging or deploying.
+  Use when the user wants a security review, vulnerability scan, or OWASP check
+  on changed code. Triggers on "security check", "security review", "vulnerability",
+  "OWASP", "scan for issues", "is this safe to merge".
 ---
 
 # /security-check
 
 Review changed files for security vulnerabilities before merging or deploying.
 
-> **Note:** Claude Code's built-in `/security-review` command scans the current git diff for vulnerabilities. Use `/security-check` when you want a broader review: full file content, not just changed lines, run against the complete OWASP checklist below.
+> **Note:** This skill reviews full file content against the OWASP checklist.
+> For a diff-only scan, use the built-in security review agent instead.
 
 ## Steps
 
-1. Get the list of changed files: `git diff --name-only HEAD` (or vs base branch if on a feature branch)
-2. Read each changed file fully
-3. Analyse against the checklist below
-4. Report findings grouped by severity
+1. Get the list of changed files using the `powershell` tool: `git --no-pager diff --name-only HEAD` (or vs base branch if on a feature branch).
+2. Read each changed file fully using the `view` tool.
+3. Analyse against the checklist below.
+4. Report findings grouped by severity.
 
 ## Security Checklist
 
@@ -72,6 +74,7 @@ Review changed files for security vulnerabilities before merging or deploying.
 ```
 
 ## Rules
-- Every finding must include: file, line number, description, and a concrete fix recommendation
-- Do not flag issues already caught by the project's static analysis / linter
-- If no issues are found, state that explicitly — do not leave the section blank
+
+- Every finding must include: file, line number, description, and a concrete fix recommendation.
+- Do not flag issues already caught by the project's static analysis / linter.
+- If no issues are found, state that explicitly — do not leave the section blank.

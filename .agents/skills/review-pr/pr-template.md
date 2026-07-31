@@ -16,7 +16,8 @@ Closes #{{ISSUE_NUMBER}}
 
 - [ ] {{TEST_STEP_1}}
 - [ ] {{TEST_STEP_2}}
-- [ ] Existing tests pass
+- [ ] Existing tests pass (`pnpm test`)
+- [ ] No new type errors (`pnpm build`)
 - [ ] No new lint errors
 
 ## Screenshots / recordings
