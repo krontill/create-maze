@@ -38,6 +38,23 @@ import { RoomsAndCorridorsGenerator } from './algorithms/rooms-and-corridors';
 import { SpanningTreeBFSGenerator } from './algorithms/spanning-tree-bfs';
 import { CellularAutomatonGenerator } from './algorithms/cellular-automaton';
 import { matrixToGraph } from './utils/graph';
+import {
+  ALGORITHM_CATALOG,
+  ALGORITHM_VALUES,
+  ALGORITHM_VARIANTS,
+  CELLULAR_AUTOMATON_RULE_VALUES,
+  FORMAT_VALUES,
+  FRACTAL_MODE_VALUES,
+  ROOMS_CONNECTION_MODE_VALUES,
+  VORONOI_PRESET_VALUES,
+  isAlgorithm,
+  isCellularAutomatonRule,
+  isFormat,
+  isFractalMode,
+  isRoomsConnectionMode,
+  isVoronoiPreset,
+  parseAlgorithm,
+} from './metadata/algorithms';
 
 // Re-export enums (values) and types (types only)
 export { Algorithm, Format };
@@ -52,6 +69,24 @@ export type {
   IMazeGenerator,
 };
 export type { GraphNode } from './types';
+export {
+  ALGORITHM_VALUES,
+  FORMAT_VALUES,
+  FRACTAL_MODE_VALUES,
+  ROOMS_CONNECTION_MODE_VALUES,
+  VORONOI_PRESET_VALUES,
+  CELLULAR_AUTOMATON_RULE_VALUES,
+  isAlgorithm,
+  isFormat,
+  isFractalMode,
+  isRoomsConnectionMode,
+  isVoronoiPreset,
+  isCellularAutomatonRule,
+  parseAlgorithm,
+  ALGORITHM_CATALOG,
+  ALGORITHM_VARIANTS,
+};
+export type { AlgorithmCatalogEntry, AlgorithmVariant } from './metadata/algorithms';
 
 // ---------------------------------------------------------------------------
 // Algorithm registry
@@ -100,17 +135,15 @@ function validateConfig(config: MazeConfig): void {
       `MazeConfig.height must be a positive integer, got ${config.height}`,
     );
   }
-  const validAlgorithms = Object.values(Algorithm) as string[];
-  if (!validAlgorithms.includes(config.algorithm as string)) {
+  if (!isAlgorithm(String(config.algorithm))) {
     throw new TypeError(
-      `MazeConfig.algorithm must be one of [${validAlgorithms.join(', ')}], got "${config.algorithm}"`,
+      `MazeConfig.algorithm must be one of [${ALGORITHM_VALUES.join(', ')}], got "${config.algorithm}"`,
     );
   }
   if (config.format !== undefined) {
-    const validFormats = Object.values(Format) as string[];
-    if (!validFormats.includes(config.format as string)) {
+    if (!isFormat(String(config.format))) {
       throw new TypeError(
-        `MazeConfig.format must be one of [${validFormats.join(', ')}], got "${config.format}"`,
+        `MazeConfig.format must be one of [${FORMAT_VALUES.join(', ')}], got "${config.format}"`,
       );
     }
   }
@@ -119,32 +152,22 @@ function validateConfig(config: MazeConfig): void {
       `MazeConfig.seed must be a finite number, got ${config.seed}`,
     );
   }
-  if (
-    config.fractalMode !== undefined &&
-    config.fractalMode !== 'tile-substitution' &&
-    config.fractalMode !== 'quadtree-division'
-  ) {
+  if (config.fractalMode !== undefined && !isFractalMode(String(config.fractalMode))) {
     throw new TypeError(
-      `MazeConfig.fractalMode must be one of [tile-substitution, quadtree-division], got "${config.fractalMode}"`,
+      `MazeConfig.fractalMode must be one of [${FRACTAL_MODE_VALUES.join(', ')}], got "${config.fractalMode}"`,
     );
   }
   if (
     config.roomsConnectionMode !== undefined &&
-    config.roomsConnectionMode !== 'manhattan-l' &&
-    config.roomsConnectionMode !== 'random-walk' &&
-    config.roomsConnectionMode !== 'nearest-mst'
+    !isRoomsConnectionMode(String(config.roomsConnectionMode))
   ) {
     throw new TypeError(
-      `MazeConfig.roomsConnectionMode must be one of [manhattan-l, random-walk, nearest-mst], got "${config.roomsConnectionMode}"`,
+      `MazeConfig.roomsConnectionMode must be one of [${ROOMS_CONNECTION_MODE_VALUES.join(', ')}], got "${config.roomsConnectionMode}"`,
     );
   }
-  if (
-    config.voronoiPreset !== undefined &&
-    config.voronoiPreset !== 'natural' &&
-    config.voronoiPreset !== 'structured'
-  ) {
+  if (config.voronoiPreset !== undefined && !isVoronoiPreset(String(config.voronoiPreset))) {
     throw new TypeError(
-      `MazeConfig.voronoiPreset must be one of [natural, structured], got "${config.voronoiPreset}"`,
+      `MazeConfig.voronoiPreset must be one of [${VORONOI_PRESET_VALUES.join(', ')}], got "${config.voronoiPreset}"`,
     );
   }
   if (
@@ -163,14 +186,9 @@ function validateConfig(config: MazeConfig): void {
       `MazeConfig.caGenerations must be a positive integer, got ${config.caGenerations}`,
     );
   }
-  if (
-    config.caRule !== undefined &&
-    config.caRule !== 'b5s45' &&
-    config.caRule !== 'maze' &&
-    config.caRule !== 'mazectric'
-  ) {
+  if (config.caRule !== undefined && !isCellularAutomatonRule(String(config.caRule))) {
     throw new TypeError(
-      `MazeConfig.caRule must be one of [b5s45, maze, mazectric], got "${config.caRule}"`,
+      `MazeConfig.caRule must be one of [${CELLULAR_AUTOMATON_RULE_VALUES.join(', ')}], got "${config.caRule}"`,
     );
   }
 }

@@ -91,6 +91,13 @@ yarn typecheck      # tsc --noEmit
 yarn build          # Vite library build → dist/
 ```
 
+### Metadata source of truth
+
+Algorithm lists, variant presets, and runtime option guards are centralized in
+`src/metadata/algorithms.ts`. When adding or changing algorithm exposure,
+update metadata there first, then consume it from API/sandbox code instead of
+duplicating string literals across files.
+
 ## Demo Pages
 
 - `/index.html` - algorithm gallery with per-algorithm maze cards

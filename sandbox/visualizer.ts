@@ -1,6 +1,7 @@
-import { generateMazeSteps, Algorithm } from '../src/index';
+import { generateMazeSteps, Algorithm, ALGORITHM_VARIANTS } from '../src/index';
 import type { MazeMatrix } from '../src/index';
 import type { CellularAutomatonRule } from '../src/index';
+import type { AlgorithmVariant } from '../src/index';
 import { createRandom } from '../src/utils/random';
 
 // ── Types ─────────────────────────────────────────────────────────────────
@@ -29,32 +30,52 @@ const CELL_PX = 6;
 const DEFAULT_CA_FILL_RATIO = 0.45;
 
 /** Maps checkbox value → AlgoVariant */
+function getSharedVariant(key: string): AlgorithmVariant {
+  const variant = ALGORITHM_VARIANTS.find((entry) => entry.key === key);
+  if (variant === undefined) {
+    throw new Error(`Missing shared algorithm variant for key "${key}"`);
+  }
+  return variant;
+}
+
+function toAlgoVariant(variant: AlgorithmVariant, labelOverride?: string): AlgoVariant {
+  return {
+    algorithm: variant.algorithm,
+    label: labelOverride ?? variant.label,
+    seed: variant.seed,
+    caRule: variant.caRule,
+    fractalMode: variant.fractalMode,
+    roomsConnectionMode: variant.roomsConnectionMode,
+    voronoiPreset: variant.voronoiPreset,
+  };
+}
+
 const VARIANT_MAP: Record<string, AlgoVariant> = {
-  'dfs':                    { algorithm: Algorithm.DFS,                label: 'DFS' },
-  'prims':                  { algorithm: Algorithm.PRIMS,              label: "Prim's" },
-  'kruskals':               { algorithm: Algorithm.KRUSKALS,           label: "Kruskal's" },
-  'growing-tree':           { algorithm: Algorithm.GROWING_TREE,       label: 'Growing Tree' },
-  'hunt-and-kill':          { algorithm: Algorithm.HUNT_AND_KILL,      label: 'Hunt-and-Kill' },
-  'spanning-tree-bfs':      { algorithm: Algorithm.SPANNING_TREE_BFS,  label: 'Spanning Tree BFS' },
-  'wilsons':                { algorithm: Algorithm.WILSONS,            label: "Wilson's" },
-  'aldous-broder':          { algorithm: Algorithm.ALDOUS_BRODER,      label: 'Aldous-Broder' },
-  'houstons':               { algorithm: Algorithm.HOUSTONS,           label: "Houston's" },
-  'ellers':                 { algorithm: Algorithm.ELLERS,             label: "Eller's" },
-  'sidewinder':             { algorithm: Algorithm.SIDEWINDER,         label: 'Sidewinder' },
-  'binary-tree':            { algorithm: Algorithm.BINARY_TREE,        label: 'Binary Tree' },
-  'spiral-backtracker':     { algorithm: Algorithm.SPIRAL_BACKTRACKER, label: 'Spiral Backtracker' },
-  'tremaux':                { algorithm: Algorithm.TREMAUX,            label: 'Trémaux' },
-  'recursive-division':     { algorithm: Algorithm.RECURSIVE_DIVISION, label: 'Recursive Division' },
-  'fractal-tessellation':   { algorithm: Algorithm.FRACTAL_TESSELLATION, label: 'Fractal Tessellation (Tile)', fractalMode: 'tile-substitution' },
-  'fractal-tessellation-qt':{ algorithm: Algorithm.FRACTAL_TESSELLATION, label: 'Fractal Tessellation (Quadtree)', fractalMode: 'quadtree-division' },
-  'voronoi-natural':        { algorithm: Algorithm.VORONOI_DIAGRAM,    label: 'Voronoi (Natural)', voronoiPreset: 'natural' },
-  'voronoi-structured':     { algorithm: Algorithm.VORONOI_DIAGRAM,    label: 'Voronoi (Structured)', voronoiPreset: 'structured' },
-  'rooms-manhattan':        { algorithm: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Manhattan)', roomsConnectionMode: 'manhattan-l' },
-  'rooms-random-walk':      { algorithm: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Walk)', roomsConnectionMode: 'random-walk' },
-  'rooms-nearest-mst':      { algorithm: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (MST)', roomsConnectionMode: 'nearest-mst' },
-  'cellular-automaton':     { algorithm: Algorithm.CELLULAR_AUTOMATON,  label: 'Cellular Automaton (B5/S45)', caRule: 'b5s45' },
-  'cellular-automaton-maze': { algorithm: Algorithm.CELLULAR_AUTOMATON, label: 'Maze (B3/S12345)', caRule: 'maze' },
-  'cellular-automaton-mazectric': { algorithm: Algorithm.CELLULAR_AUTOMATON, label: 'Mazectric (B3/S1234)', caRule: 'mazectric' },
+  'dfs': toAlgoVariant(getSharedVariant('dfs'), 'DFS'),
+  'prims': toAlgoVariant(getSharedVariant('prims')),
+  'kruskals': toAlgoVariant(getSharedVariant('kruskals')),
+  'growing-tree': toAlgoVariant(getSharedVariant('growing-tree')),
+  'hunt-and-kill': toAlgoVariant(getSharedVariant('hunt-and-kill')),
+  'spanning-tree-bfs': toAlgoVariant(getSharedVariant('spanning-tree-bfs')),
+  'wilsons': toAlgoVariant(getSharedVariant('wilsons')),
+  'aldous-broder': toAlgoVariant(getSharedVariant('aldous-broder')),
+  'houstons': toAlgoVariant(getSharedVariant('houstons')),
+  'ellers': toAlgoVariant(getSharedVariant('ellers')),
+  'sidewinder': toAlgoVariant(getSharedVariant('sidewinder')),
+  'binary-tree': toAlgoVariant(getSharedVariant('binary-tree')),
+  'spiral-backtracker': toAlgoVariant(getSharedVariant('spiral-backtracker-0'), 'Spiral Backtracker'),
+  'tremaux': toAlgoVariant(getSharedVariant('tremaux'), 'Trémaux'),
+  'recursive-division': toAlgoVariant(getSharedVariant('recursive-division')),
+  'fractal-tessellation': toAlgoVariant(getSharedVariant('fractal-tessellation-tile-substitution'), 'Fractal Tessellation (Tile)'),
+  'fractal-tessellation-qt': toAlgoVariant(getSharedVariant('fractal-tessellation-quadtree-division'), 'Fractal Tessellation (Quadtree)'),
+  'voronoi-natural': toAlgoVariant(getSharedVariant('voronoi-diagram-natural'), 'Voronoi (Natural)'),
+  'voronoi-structured': toAlgoVariant(getSharedVariant('voronoi-diagram-structured'), 'Voronoi (Structured)'),
+  'rooms-manhattan': toAlgoVariant(getSharedVariant('rooms-and-corridors-manhattan-l'), 'Rooms & Corridors (Manhattan)'),
+  'rooms-random-walk': toAlgoVariant(getSharedVariant('rooms-and-corridors-random-walk'), 'Rooms & Corridors (Walk)'),
+  'rooms-nearest-mst': toAlgoVariant(getSharedVariant('rooms-and-corridors-nearest-mst'), 'Rooms & Corridors (MST)'),
+  'cellular-automaton': toAlgoVariant(getSharedVariant('cellular-automaton-b5s45')),
+  'cellular-automaton-maze': toAlgoVariant(getSharedVariant('cellular-automaton-maze')),
+  'cellular-automaton-mazectric': toAlgoVariant(getSharedVariant('cellular-automaton-mazectric')),
 };
 
 /** All sidebar checkboxes in document order — used for panel ordering. */
@@ -519,5 +540,4 @@ speedSlider.addEventListener('input', () => {
 
 // Initialise frame interval from default slider value
 frameInterval = speedToInterval(parseInt(speedSlider.value, 10));
-
 

@@ -1,23 +1,38 @@
-import { generateMaze, Algorithm } from '../src/index';
+import {
+  generateMaze,
+  Algorithm,
+  ALGORITHM_VARIANTS,
+  isCellularAutomatonRule,
+  isFractalMode,
+  isVoronoiPreset,
+} from '../src/index';
 import type { MazeMatrix } from '../src/index';
 import type { CellularAutomatonRule } from '../src/index';
 
 const CELL_PX = 8;
-const SPIRAL_SEEDS = [0, 1, 2] as const;
+const SPIRAL_SEEDS: number[] = ALGORITHM_VARIANTS
+  .filter((variant) => variant.algorithm === Algorithm.SPIRAL_BACKTRACKER)
+  .map((variant) => variant.seed)
+  .filter((seed): seed is number => seed !== undefined);
+
 type FractalMode = 'tile-substitution' | 'quadtree-division';
 type CellularAutomatonRulePreset = CellularAutomatonRule;
 type RoomsConnectionMode = 'manhattan-l' | 'random-walk' | 'nearest-mst';
 type VoronoiPreset = 'natural' | 'structured';
 
-const ROOMS_MODE_VARIANTS: Array<{ mode: RoomsConnectionMode; label: string }> = [
-  { mode: 'manhattan-l', label: 'Manhattan-L' },
-  { mode: 'random-walk', label: 'Random Walk' },
-  { mode: 'nearest-mst', label: 'Nearest MST' },
-];
+const ROOMS_MODE_VARIANTS: Array<{ mode: RoomsConnectionMode; label: string }> = ALGORITHM_VARIANTS
+  .filter((variant) => variant.algorithm === Algorithm.ROOMS_AND_CORRIDORS)
+  .map((variant) => ({
+    mode: variant.roomsConnectionMode,
+    label: variant.label.replace('Rooms & Corridors (', '').replace(')', ''),
+  }))
+  .filter(
+    (entry): entry is { mode: RoomsConnectionMode; label: string } => entry.mode !== undefined,
+  );
 
 function getFractalMode(section: HTMLElement): FractalMode | undefined {
   const mode = section.dataset['fractalMode'];
-  if (mode === 'tile-substitution' || mode === 'quadtree-division') {
+  if (mode !== undefined && isFractalMode(mode)) {
     return mode;
   }
   return undefined;
@@ -27,7 +42,7 @@ function getCellularAutomatonRule(
   section: HTMLElement,
 ): CellularAutomatonRulePreset | undefined {
   const rule = section.dataset['caRule'];
-  if (rule === 'b5s45' || rule === 'maze' || rule === 'mazectric') {
+  if (rule !== undefined && isCellularAutomatonRule(rule)) {
     return rule;
   }
   return undefined;
@@ -36,7 +51,7 @@ function getCellularAutomatonRule(
 function getVoronoiPreset(section: HTMLElement): VoronoiPreset | undefined {
   const presetInput = section.querySelector<HTMLSelectElement>('.preset-input');
   const preset = presetInput?.value;
-  if (preset === 'natural' || preset === 'structured') {
+  if (preset !== undefined && isVoronoiPreset(preset)) {
     return preset;
   }
 

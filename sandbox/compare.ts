@@ -1,20 +1,14 @@
-import { generateMaze, Algorithm } from '../src/index';
+import { generateMaze, ALGORITHM_VARIANTS } from '../src/index';
 import type { MazeMatrix } from '../src/index';
-import type { CellularAutomatonRule } from '../src/index';
-import type { RoomsConnectionMode } from '../src/index';
-import type { VoronoiPreset } from '../src/index';
+import type { AlgorithmVariant } from '../src/index';
 
 const CELL_PX = 8;
 
 interface AlgorithmDef {
-  algo: Algorithm;
+  key: string;
+  variant: AlgorithmVariant;
   label: string;
   color: string;
-  seed?: number;
-  caRule?: CellularAutomatonRule;
-  fractalMode?: 'tile-substitution' | 'quadtree-division';
-  roomsConnectionMode?: RoomsConnectionMode;
-  voronoiPreset?: VoronoiPreset;
 }
 
 interface TimedMaze {
@@ -30,35 +24,42 @@ interface RenderMetrics {
   fullCycleMs: number;
 }
 
-const ALGORITHMS: AlgorithmDef[] = [
-  { algo: Algorithm.DFS,               label: 'Depth-First Search',   color: '#ef4444' },
-  { algo: Algorithm.PRIMS,             label: "Prim's",               color: '#f97316' },
-  { algo: Algorithm.KRUSKALS,          label: "Kruskal's",            color: '#eab308' },
-  { algo: Algorithm.BINARY_TREE,       label: 'Binary Tree',          color: '#22c55e' },
-  { algo: Algorithm.WILSONS,           label: "Wilson's",             color: '#14b8a6' },
-  { algo: Algorithm.ALDOUS_BRODER,     label: 'Aldous-Broder',        color: '#06b6d4' },
-  { algo: Algorithm.ELLERS,            label: "Eller's",              color: '#3b82f6' },
-  { algo: Algorithm.SIDEWINDER,        label: 'Sidewinder',           color: '#6366f1' },
-  { algo: Algorithm.SPIRAL_BACKTRACKER,label: 'Spiral Backtracker (seed 0)', color: '#0ea5e9', seed: 0 },
-  { algo: Algorithm.SPIRAL_BACKTRACKER,label: 'Spiral Backtracker (seed 1)', color: '#0284c7', seed: 1 },
-  { algo: Algorithm.SPIRAL_BACKTRACKER,label: 'Spiral Backtracker (seed 2)', color: '#0369a1', seed: 2 },
-  { algo: Algorithm.HUNT_AND_KILL,     label: 'Hunt-and-Kill',        color: '#a855f7' },
-  { algo: Algorithm.RECURSIVE_DIVISION,label: 'Recursive Division',   color: '#ec4899' },
-  { algo: Algorithm.FRACTAL_TESSELLATION, label: 'Fractal Tessellation (Tile Substitution)', color: '#f43f5e', fractalMode: 'tile-substitution' },
-  { algo: Algorithm.FRACTAL_TESSELLATION, label: 'Fractal Tessellation (Quadtree Division)', color: '#10b981', fractalMode: 'quadtree-division' },
-  { algo: Algorithm.VORONOI_DIAGRAM, label: 'Voronoi Diagram (Natural)', color: '#16a34a', voronoiPreset: 'natural' },
-  { algo: Algorithm.VORONOI_DIAGRAM, label: 'Voronoi Diagram (Structured)', color: '#0891b2', voronoiPreset: 'structured' },
-  { algo: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Manhattan-L)', color: '#8b5cf6', roomsConnectionMode: 'manhattan-l' },
-  { algo: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Random Walk)', color: '#14b8a6', roomsConnectionMode: 'random-walk' },
-  { algo: Algorithm.ROOMS_AND_CORRIDORS, label: 'Rooms & Corridors (Nearest MST)', color: '#f59e0b', roomsConnectionMode: 'nearest-mst' },
-  { algo: Algorithm.GROWING_TREE,      label: 'Growing Tree',         color: '#84cc16' },
-  { algo: Algorithm.HOUSTONS,          label: "Houston's",            color: '#d946ef' },
-  { algo: Algorithm.TREMAUX,           label: 'Tremaux',              color: '#f59e0b' },
-  { algo: Algorithm.SPANNING_TREE_BFS, label: 'Spanning Tree (BFS)',  color: '#b45309' },
-  { algo: Algorithm.CELLULAR_AUTOMATON, label: 'Cellular Automaton (B5/S45)', color: '#4ade80', caRule: 'b5s45' },
-  { algo: Algorithm.CELLULAR_AUTOMATON, label: 'Maze (B3/S12345)', color: '#22c55e', caRule: 'maze' },
-  { algo: Algorithm.CELLULAR_AUTOMATON, label: 'Mazectric (B3/S1234)', color: '#16a34a', caRule: 'mazectric' },
-];
+const ALGORITHM_COLOR_BY_KEY: Record<string, string> = {
+  'dfs': '#ef4444',
+  'prims': '#f97316',
+  'kruskals': '#eab308',
+  'binary-tree': '#22c55e',
+  'wilsons': '#14b8a6',
+  'aldous-broder': '#06b6d4',
+  'ellers': '#3b82f6',
+  'sidewinder': '#6366f1',
+  'spiral-backtracker-0': '#0ea5e9',
+  'spiral-backtracker-1': '#0284c7',
+  'spiral-backtracker-2': '#0369a1',
+  'hunt-and-kill': '#a855f7',
+  'recursive-division': '#ec4899',
+  'fractal-tessellation-tile-substitution': '#f43f5e',
+  'fractal-tessellation-quadtree-division': '#10b981',
+  'voronoi-diagram-natural': '#16a34a',
+  'voronoi-diagram-structured': '#0891b2',
+  'rooms-and-corridors-manhattan-l': '#8b5cf6',
+  'rooms-and-corridors-random-walk': '#14b8a6',
+  'rooms-and-corridors-nearest-mst': '#f59e0b',
+  'growing-tree': '#84cc16',
+  'houstons': '#d946ef',
+  'tremaux': '#f59e0b',
+  'spanning-tree-bfs': '#b45309',
+  'cellular-automaton-b5s45': '#4ade80',
+  'cellular-automaton-maze': '#22c55e',
+  'cellular-automaton-mazectric': '#16a34a',
+};
+
+const ALGORITHMS: AlgorithmDef[] = ALGORITHM_VARIANTS.map((variant) => ({
+  key: variant.key,
+  variant,
+  label: variant.label,
+  color: ALGORITHM_COLOR_BY_KEY[variant.key] ?? '#9ca3af',
+}));
 
 // ---------- data helpers ----------
 
@@ -67,17 +68,17 @@ function generateAllMazes(
   width: number,
   height: number,
 ): TimedMaze[] {
-  return selected.map(({ algo, label, seed, caRule, fractalMode, roomsConnectionMode, voronoiPreset }) => {
+  return selected.map(({ variant, label }) => {
     const startedAt = performance.now();
     const maze = generateMaze({
       width,
       height,
-      algorithm: algo,
-      seed,
-      caRule,
-      fractalMode,
-      roomsConnectionMode,
-      voronoiPreset,
+      algorithm: variant.algorithm,
+      seed: variant.seed,
+      caRule: variant.caRule,
+      fractalMode: variant.fractalMode,
+      roomsConnectionMode: variant.roomsConnectionMode,
+      voronoiPreset: variant.voronoiPreset,
     }) as MazeMatrix;
     const endedAt = performance.now();
 
@@ -125,7 +126,7 @@ function getSelectedAlgorithms(container: HTMLElement): AlgorithmDef[] {
 
 function buildLegend(container: HTMLElement, onToggle: () => void): void {
   container.innerHTML = '';
-  for (const [index, { algo, label, color }] of ALGORITHMS.entries()) {
+  for (const [index, { key, label, color }] of ALGORITHMS.entries()) {
     const item = document.createElement('label');
     item.className = 'legend-item';
 
@@ -133,7 +134,7 @@ function buildLegend(container: HTMLElement, onToggle: () => void): void {
     cb.type = 'checkbox';
     cb.checked = false;
     cb.defaultChecked = false;
-    cb.dataset['algo'] = algo;
+    cb.dataset['algo'] = key;
     cb.dataset['index'] = String(index);
     cb.style.accentColor = color;
     cb.addEventListener('change', onToggle);

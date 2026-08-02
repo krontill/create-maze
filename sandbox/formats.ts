@@ -1,4 +1,4 @@
-import { Algorithm } from '../src/index';
+import { Algorithm, ALGORITHM_CATALOG, parseAlgorithm } from '../src/index';
 import type {
   CellularAutomatonRule,
   FractalMode,
@@ -24,35 +24,22 @@ const caRuleInput = document.getElementById('ca-rule-input') as HTMLSelectElemen
 const regenerateButton = document.getElementById('regen-btn') as HTMLButtonElement;
 const matrixMazeEl = document.getElementById('matrix-maze') as HTMLDivElement;
 const matrixTextEl = document.getElementById('matrix-output') as HTMLPreElement;
-const graphSvgEl = document.getElementById('graph-output-visual') as SVGSVGElement;
+const graphSvgEl = document.getElementById('graph-output-visual') as unknown as SVGSVGElement;
 const graphTextEl = document.getElementById('graph-output') as HTMLPreElement;
 const summaryEl = document.getElementById('summary') as HTMLDivElement;
 
-function parseAlgorithm(value: string): Algorithm {
-  switch (value) {
-    case Algorithm.DFS:
-    case Algorithm.PRIMS:
-    case Algorithm.KRUSKALS:
-    case Algorithm.BINARY_TREE:
-    case Algorithm.WILSONS:
-    case Algorithm.ALDOUS_BRODER:
-    case Algorithm.ELLERS:
-    case Algorithm.SIDEWINDER:
-    case Algorithm.SPIRAL_BACKTRACKER:
-    case Algorithm.HUNT_AND_KILL:
-    case Algorithm.RECURSIVE_DIVISION:
-    case Algorithm.GROWING_TREE:
-    case Algorithm.HOUSTONS:
-    case Algorithm.TREMAUX:
-    case Algorithm.FRACTAL_TESSELLATION:
-    case Algorithm.VORONOI_DIAGRAM:
-    case Algorithm.ROOMS_AND_CORRIDORS:
-    case Algorithm.SPANNING_TREE_BFS:
-    case Algorithm.CELLULAR_AUTOMATON:
-      return value;
-    default:
-      return Algorithm.DFS;
+function hydrateAlgorithmOptions(): void {
+  const previouslySelected = parseAlgorithm(algorithmInput.value);
+  algorithmInput.replaceChildren();
+
+  for (const entry of ALGORITHM_CATALOG) {
+    const option = document.createElement('option');
+    option.value = entry.algorithm;
+    option.textContent = entry.label;
+    algorithmInput.appendChild(option);
   }
+
+  algorithmInput.value = previouslySelected;
 }
 
 function readFractalMode(value: string): FractalMode {
@@ -246,6 +233,7 @@ function generate(): void {
   );
 }
 
+hydrateAlgorithmOptions();
 updateControlVisibility();
 generate();
 
