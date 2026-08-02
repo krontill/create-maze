@@ -2,11 +2,21 @@
   "mcpServers": {
     "context7": {
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"]
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ]
     },
-    "github": {
+    "lovable": {
+      "type": "http",
+      "url": "https://mcp.lovable.dev/?src=settings"
+    },
+    "github-mcp": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github@latest"],
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github@latest"
+      ],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
       }

@@ -98,6 +98,13 @@ Algorithm lists, variant presets, and runtime option guards are centralized in
 update metadata there first, then consume it from API/sandbox code instead of
 duplicating string literals across files.
 
+### Project MCP servers
+
+This repository includes project MCP server config in `.mcp.json` for:
+- `context7`
+- `github`
+- `lovable`
+
 ## Demo Pages
 
 - `/index.html` - algorithm gallery with per-algorithm maze cards
