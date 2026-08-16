@@ -20,7 +20,6 @@ Built with Vite (Library mode). Dual ESM/CJS output with automatic `.d.ts` decla
 When generating code, adhere to these conceptual data structures:
 - **MazeConfig:** An interface accepting `width` (number), `height` (number), `algorithm` (enum), and optionally `format` (enum), `seed` (number), `fractalMode` (`'tile-substitution' | 'quadtree-division'`), `roomsConnectionMode` (`'manhattan-l' | 'random-walk' | 'nearest-mst'`), `voronoiPreset` (`'natural' | 'structured'`), `caFillRatio` (number in `(0, 1)`), `caGenerations` (positive integer), and `caRule` (`'b5s45' | 'maze' | 'mazectric'`).
 - **Output Format:** Algorithms should output a standardized format. By default, a 2D numeric array (`number[][]`), where `0` represents a wall and `1` represents a path.
-- **Pathfinder Output:** Solving algorithms should return an array of coordinates: `Array<{x: number, y: number}>`.
 
 ## Public API
 - `Algorithm` currently includes `DFS`, `PRIMS`, `KRUSKALS`, `BINARY_TREE`, `WILSONS`, `ALDOUS_BRODER`, `ELLERS`, `SIDEWINDER`, `SPIRAL_BACKTRACKER`, `HUNT_AND_KILL`, `RECURSIVE_DIVISION`, `GROWING_TREE`, `HOUSTONS`, `TREMAUX`, `FRACTAL_TESSELLATION`, `ROOMS_AND_CORRIDORS`, `VORONOI_DIAGRAM`, `SPANNING_TREE_BFS`, and `CELLULAR_AUTOMATON`.
@@ -42,6 +41,7 @@ When prompted under this domain, act as a strict Computer Science expert. Focus 
 ```
 src/
   algorithms/   # Maze generation algorithms (one file per algorithm)
+  metadata/     # Public algorithm, format, and option catalogs/guards
   utils/         # Shared grid, graph, and random helpers
   index.ts       # Public API entry point
   types.ts       # Public enums, interfaces, and output types
@@ -50,6 +50,7 @@ sandbox/
   compare.html   # Algorithm comparison page
   visualizer.html # Step-by-step generator page
   formats.html   # MATRIX + GRAPH explorer for one seeded maze
+tests/           # Unit and integration tests
 ```
 
 ## Dot-Folder Policy
