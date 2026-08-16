@@ -1,0 +1,80 @@
+/* Shared shell for the static sandbox pages. */
+
+.site-header {
+  align-items: center;
+  border-bottom: 1px solid #292a36;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.site-header h1 {
+  color: #f5f0ea;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.site-header-copy {
+  min-width: 0;
+}
+
+.intro {
+  color: #9893aa;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  max-width: 920px;
+}
+
+.site-nav {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  justify-content: flex-end;
+}
+
+.site-nav a {
+  border-bottom: 1px solid transparent;
+  color: #aaa6d9;
+  font-size: 0.82rem;
+  padding: 0.2rem 0;
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible,
+.site-nav a[aria-current="page"] {
+  border-color: #c8c4f0;
+  color: #f0ede8;
+}
+
+.site-nav a:focus-visible {
+  outline: 2px solid #f1eccf;
+  outline-offset: 4px;
+}
+
+@media (max-width: 760px) {
+  .site-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .site-nav {
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-nav a {
+    transition: none;
+  }
+}

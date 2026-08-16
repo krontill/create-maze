@@ -164,12 +164,20 @@
         }
       }
     </style>
+    <link rel="stylesheet" href="/shared.css" />
   </head>
   <body>
-    <header>
-      <h1>maze-builder</h1>
-      <p>Maze generation algorithms rendered as CSS Grid examples. Spiral Backtracker includes three distinct seeded variants, and Fractal Tessellation includes two generation modes. &nbsp;<a href="/compare.html" style="color:#6666aa;font-size:0.85rem;text-decoration:none;border-bottom:1px solid #6666aa44;padding-bottom:1px;">View algorithm comparison →</a> &nbsp;<a href="/visualizer.html" style="color:#6666aa;font-size:0.85rem;text-decoration:none;border-bottom:1px solid #6666aa44;padding-bottom:1px;">Step-by-Step Visualizer →</a> &nbsp;<a href="/formats.html" style="color:#6666aa;font-size:0.85rem;text-decoration:none;border-bottom:1px solid #6666aa44;padding-bottom:1px;">Formats Explorer →</a></p>
+    <header class="site-header">
+      <h1>Maze builder library</h1>
+      <nav class="site-nav" aria-label="Sandbox pages">
+        <a href="/index.html" aria-current="page">Demo</a>
+        <a href="/compare.html">Compare</a>
+        <a href="/visualizer.html">Step-by-Step</a>
+        <a href="/formats.html">Formats</a>
+      </nav>
     </header>
+
+    <p class="intro">Maze generation algorithms rendered as CSS Grid examples. Spiral Backtracker includes three distinct seeded variants, and Fractal Tessellation includes two generation modes.</p>
 
     <div class="grid">
       <section class="card" data-algo="dfs">
