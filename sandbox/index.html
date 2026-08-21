@@ -15,23 +15,6 @@
         padding: 1.25rem 1.5rem;
       }
 
-      header {
-        margin-bottom: 2.5rem;
-      }
-
-      header h1 {
-        font-size: 1.35rem;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: #f5f0ea;
-      }
-
-      header p {
-        margin-top: 0.4rem;
-        font-size: 0.9rem;
-        color: #888;
-      }
-
       .grid {
         display: flex;
         flex-wrap: wrap;
@@ -168,13 +151,20 @@
   </head>
   <body>
     <header class="site-header">
-      <h1>Maze builder library</h1>
-      <nav class="site-nav" aria-label="Sandbox pages">
-        <a href="/index.html" aria-current="page">Demo</a>
-        <a href="/compare.html">Compare</a>
-        <a href="/visualizer.html">Step-by-Step</a>
-        <a href="/formats.html">Formats</a>
-      </nav>
+      <div class="site-header-inner">
+        <a class="site-brand" href="/index.html">Maze builder library</a>
+        <nav class="site-nav" aria-label="Sandbox pages">
+          <a href="/index.html" aria-current="page">Demo Gallery</a>
+          <a href="/compare.html">Compare</a>
+          <a href="/visualizer.html">Visualizer</a>
+          <a href="/formats.html">Formats</a>
+        </nav>
+        <div class="site-header-badges" aria-label="Project properties">
+          <span>19 algorithms</span>
+          <span>client-side</span>
+          <span>deterministic seeds</span>
+        </div>
+      </div>
     </header>
 
     <p class="intro">Maze generation algorithms rendered as CSS Grid examples. Spiral Backtracker includes three distinct seeded variants, and Fractal Tessellation includes two generation modes.</p>
