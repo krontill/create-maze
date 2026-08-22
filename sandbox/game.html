@@ -22,6 +22,14 @@
         max-width: 1000px;
       }
 
+      .layout + .layout {
+        margin-top: 2rem;
+      }
+
+      .challenge-message {
+        margin-top: 2rem;
+      }
+
       .controls {
         display: flex;
         align-items: center;
@@ -131,6 +139,26 @@
         background: #3a3a5a;
         border-color: #6666aa;
       }
+
+      .canvas-game-area {
+        position: relative;
+        width: fit-content;
+        max-width: 100%;
+      }
+
+      .canvas-maze {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        outline: 2px solid #2a2a38;
+        image-rendering: pixelated;
+        cursor: pointer;
+      }
+
+      .canvas-maze:focus-visible {
+        outline: 3px solid #8888d0;
+        outline-offset: 3px;
+      }
     </style>
     <link rel="stylesheet" href="/shared.css" />
   </head>
@@ -167,6 +195,34 @@
       </div>
     </div>
 
+    <div class="layout">
+      <h2>Canvas game</h2>
+      <p class="intro">The same maze game rendered with a 2D canvas. Click the maze to focus it, then use the arrow keys.</p>
+      <div class="controls">
+        <label>W <input type="number" id="canvas-inp-width" value="15" min="2" max="60" /></label>
+        <label>H <input type="number" id="canvas-inp-height" value="10" min="2" max="60" /></label>
+        <button id="canvas-btn-new-maze">New Maze</button>
+      </div>
+      <p class="status-line" id="canvas-status-line">Click the canvas, then use the arrow keys to move.</p>
+
+      <div class="canvas-game-area">
+        <canvas
+          class="canvas-maze"
+          id="canvas-maze"
+          aria-label="Playable canvas maze"
+          role="application"
+          tabindex="0"
+        ></canvas>
+        <div class="win-banner" id="canvas-win-banner">
+          <p>🎉 You escaped the maze!</p>
+          <button id="canvas-btn-play-again">Play again</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="intro challenge-message">Challenge yourself: can you solve both mazes at the same time?</p>
+
     <script type="module" src="/game.ts"></script>
+    <script type="module" src="/game-canvas.ts"></script>
   </body>
 </html>
