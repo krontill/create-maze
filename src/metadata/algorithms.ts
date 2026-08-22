@@ -47,6 +47,9 @@ export const ROOMS_CONNECTION_MODE_VALUES: readonly RoomsConnectionMode[] = [
 export const VORONOI_PRESET_VALUES: readonly VoronoiPreset[] = [
   'natural',
   'structured',
+  'border-doors',
+  'border-doors-braided',
+  'region-border-doors',
 ];
 
 export const CELLULAR_AUTOMATON_RULE_VALUES: readonly CellularAutomatonRule[] = [
@@ -111,6 +114,9 @@ export const ALGORITHM_VARIANTS: readonly AlgorithmVariant[] = [
   { key: 'fractal-tessellation-quadtree-division', label: 'Fractal Tessellation (Quadtree Division)', algorithm: Algorithm.FRACTAL_TESSELLATION, fractalMode: 'quadtree-division' },
   { key: 'voronoi-diagram-natural', label: 'Voronoi Diagram (Natural)', algorithm: Algorithm.VORONOI_DIAGRAM, voronoiPreset: 'natural' },
   { key: 'voronoi-diagram-structured', label: 'Voronoi Diagram (Structured)', algorithm: Algorithm.VORONOI_DIAGRAM, voronoiPreset: 'structured' },
+  { key: 'voronoi-diagram-border-doors', label: 'Voronoi Diagram (Border Doors - Balanced)', algorithm: Algorithm.VORONOI_DIAGRAM, voronoiPreset: 'border-doors' },
+  { key: 'voronoi-diagram-border-doors-braided', label: 'Voronoi Diagram (Border Doors - Braided)', algorithm: Algorithm.VORONOI_DIAGRAM, voronoiPreset: 'border-doors-braided' },
+  { key: 'voronoi-diagram-region-border-doors', label: 'Voronoi Diagram (Region Border Doors)', algorithm: Algorithm.VORONOI_DIAGRAM, voronoiPreset: 'region-border-doors' },
   { key: 'rooms-and-corridors-manhattan-l', label: 'Rooms & Corridors (Manhattan-L)', algorithm: Algorithm.ROOMS_AND_CORRIDORS, roomsConnectionMode: 'manhattan-l' },
   { key: 'rooms-and-corridors-random-walk', label: 'Rooms & Corridors (Random Walk)', algorithm: Algorithm.ROOMS_AND_CORRIDORS, roomsConnectionMode: 'random-walk' },
   { key: 'rooms-and-corridors-nearest-mst', label: 'Rooms & Corridors (Nearest MST)', algorithm: Algorithm.ROOMS_AND_CORRIDORS, roomsConnectionMode: 'nearest-mst' },

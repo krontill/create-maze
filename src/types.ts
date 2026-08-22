@@ -35,7 +35,7 @@ export type FractalMode = 'tile-substitution' | 'quadtree-division';
 export type RoomsConnectionMode = 'manhattan-l' | 'random-walk' | 'nearest-mst';
 
 /** Voronoi Diagram regional layout presets. */
-export type VoronoiPreset = 'natural' | 'structured';
+export type VoronoiPreset = 'natural' | 'structured' | 'border-doors' | 'border-doors-braided' | 'region-border-doors';
 
 /** Cellular Automaton rule presets. */
 export type CellularAutomatonRule = 'b5s45' | 'maze' | 'mazectric';

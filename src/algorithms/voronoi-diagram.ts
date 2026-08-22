@@ -22,6 +22,19 @@ interface CandidateEdge {
   toId: number;
 }
 
+interface BorderDoorsTuning {
+  extraDoorChance: number;
+  braidChance: number;
+  maxPasses: number;
+  targetDeadEndRatio: number;
+  preferSameRegionBraids: boolean;
+}
+
+interface MatrixSite {
+  row: number;
+  col: number;
+}
+
 const DIRECTIONS: Cell[] = [
   [-1, 0],
   [1, 0],
@@ -81,9 +94,18 @@ function toCellId(row: number, col: number, width: number): number {
 
 function chooseSiteCount(width: number, height: number, preset: VoronoiPreset): number {
   const total = width * height;
+  if (preset === 'region-border-doors') {
+    return Math.max(3, Math.floor(total / 14));
+  }
+
   if (preset === 'structured') {
     const suggested = Math.round(Math.sqrt(total));
     return Math.max(4, Math.min(total, Math.min(36, suggested)));
+  }
+
+  if (preset === 'border-doors' || preset === 'border-doors-braided') {
+    const suggested = Math.round(Math.sqrt(total) / 3);
+    return Math.max(2, Math.min(total, Math.min(18, suggested)));
   }
 
   const suggested = Math.round(Math.sqrt(total) / 2);
@@ -263,6 +285,284 @@ function carveIntraRegionForest(
   }
 }
 
+function collectInterRegionEdges(width: number, height: number, labels: number[][]): CandidateEdge[] {
+  const boundaries: CandidateEdge[] = [];
+
+  for (let row = 0; row < height; row += 1) {
+    for (let col = 0; col < width; col += 1) {
+      const fromId = toCellId(row, col, width);
+
+      if (row + 1 < height) {
+        const to: Cell = [row + 1, col];
+        const toId = toCellId(to[0], to[1], width);
+        if (labels[row][col] !== labels[to[0]][to[1]]) {
+          boundaries.push({ from: [row, col], to, fromId, toId });
+        }
+      }
+
+      if (col + 1 < width) {
+        const to: Cell = [row, col + 1];
+        const toId = toCellId(to[0], to[1], width);
+        if (labels[row][col] !== labels[to[0]][to[1]]) {
+          boundaries.push({ from: [row, col], to, fromId, toId });
+        }
+      }
+    }
+  }
+
+  return boundaries;
+}
+
+function assignVoronoiRegionsOnMatrix(
+  rows: number,
+  cols: number,
+  sites: MatrixSite[],
+): number[][] {
+  const owner: number[][] = Array.from({ length: rows }, () => new Array<number>(cols).fill(0));
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      let bestSite = 0;
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      for (let siteIndex = 0; siteIndex < sites.length; siteIndex += 1) {
+        const site = sites[siteIndex];
+        if (site === undefined) {
+          continue;
+        }
+
+        const dr = site.row - row;
+        const dc = site.col - col;
+        const distance = dr * dr + dc * dc;
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestSite = siteIndex;
+        }
+      }
+
+      owner[row][col] = bestSite;
+    }
+  }
+
+  return owner;
+}
+
+function runLovableBorderDoorsVariant(
+  grid: MazeMatrix,
+  width: number,
+  height: number,
+  siteCount: number,
+  random: () => number,
+  onStep?: (grid: MazeMatrix) => void,
+): void {
+  const rows = 2 * height + 1;
+  const cols = 2 * width + 1;
+
+  const sites: MatrixSite[] = Array.from({ length: siteCount }, () => ({
+    row: 1 + Math.floor(random() * (rows - 2)),
+    col: 1 + Math.floor(random() * (cols - 2)),
+  }));
+
+  const owner = assignVoronoiRegionsOnMatrix(rows, cols, sites);
+
+  for (let row = 1; row < rows - 1; row += 1) {
+    for (let col = 1; col < cols - 1; col += 1) {
+      const me = owner[row]?.[col];
+      const border =
+        owner[row - 1]?.[col] !== me ||
+        owner[row + 1]?.[col] !== me ||
+        owner[row]?.[col - 1] !== me ||
+        owner[row]?.[col + 1] !== me;
+
+      grid[row][col] = border ? 0 : 1;
+    }
+
+    onStep?.(grid);
+  }
+
+  for (let i = 0; i < siteCount * 2; i += 1) {
+    const row = 1 + Math.floor(random() * (rows - 2));
+    const col = 1 + Math.floor(random() * (cols - 2));
+    if (grid[row]?.[col] === 0) {
+      grid[row][col] = 1;
+      onStep?.(grid);
+    }
+  }
+}
+
+function getBorderDoorsTuning(preset: VoronoiPreset): BorderDoorsTuning {
+  if (preset === 'border-doors-braided') {
+    return {
+      extraDoorChance: 0.22,
+      braidChance: 0.95,
+      maxPasses: 18,
+      targetDeadEndRatio: 0.05,
+      preferSameRegionBraids: false,
+    };
+  }
+
+  return {
+    extraDoorChance: 0.12,
+    braidChance: 0.8,
+    maxPasses: 10,
+    targetDeadEndRatio: 0.1,
+    preferSameRegionBraids: true,
+  };
+}
+
+function punchBoundaryDoors(
+  grid: MazeMatrix,
+  dsu: DisjointSet,
+  boundaryEdges: CandidateEdge[],
+  random: () => number,
+  extraDoorChance: number,
+  onStep?: (grid: MazeMatrix) => void,
+): void {
+  const shuffled = [...boundaryEdges];
+  shuffle(shuffled, random);
+
+  // Phase 1: minimally connect components by opening only needed boundary doors.
+  for (const edge of shuffled) {
+    if (dsu.union(edge.fromId, edge.toId)) {
+      carvePassage(grid, edge.from[0], edge.from[1], edge.to[0], edge.to[1]);
+      onStep?.(grid);
+    }
+  }
+
+  // Phase 2: open a few extra doors to avoid a too-rigid region graph.
+  for (const edge of shuffled) {
+    if (random() < extraDoorChance) {
+      carvePassage(grid, edge.from[0], edge.from[1], edge.to[0], edge.to[1]);
+      onStep?.(grid);
+    }
+  }
+}
+
+function countDeadEnds(grid: MazeMatrix, width: number, height: number): number {
+  let deadEnds = 0;
+  for (let row = 0; row < height; row += 1) {
+    for (let col = 0; col < width; col += 1) {
+      if (countOpenNeighbors(grid, row, col, width, height) === 1) {
+        deadEnds += 1;
+      }
+    }
+  }
+  return deadEnds;
+}
+
+function countOpenNeighbors(
+  grid: MazeMatrix,
+  row: number,
+  col: number,
+  width: number,
+  height: number,
+): number {
+  let degree = 0;
+
+  for (const [dr, dc] of DIRECTIONS) {
+    const nextRow = row + dr;
+    const nextCol = col + dc;
+
+    if (nextRow < 0 || nextRow >= height || nextCol < 0 || nextCol >= width) {
+      continue;
+    }
+
+    const wallRow = row + nextRow + 1;
+    const wallCol = col + nextCol + 1;
+    if (grid[wallRow][wallCol] === 1) {
+      degree += 1;
+    }
+  }
+
+  return degree;
+}
+
+function braidDeadEnds(
+  grid: MazeMatrix,
+  width: number,
+  height: number,
+  labels: number[][],
+  tuning: BorderDoorsTuning,
+  random: () => number,
+  onStep?: (grid: MazeMatrix) => void,
+): void {
+  const ids = Array.from({ length: width * height }, (_, idx) => idx);
+  const totalCells = width * height;
+
+  for (let pass = 0; pass < tuning.maxPasses; pass += 1) {
+    if (countDeadEnds(grid, width, height) <= Math.floor(totalCells * tuning.targetDeadEndRatio)) {
+      break;
+    }
+
+    shuffle(ids, random);
+    let changed = false;
+
+    for (const id of ids) {
+      const row = Math.floor(id / width);
+      const col = id % width;
+      const degree = countOpenNeighbors(grid, row, col, width, height);
+
+      if (degree !== 1 || random() > tuning.braidChance) {
+        continue;
+      }
+
+      const closedNeighbors: Cell[] = [];
+      for (const [dr, dc] of DIRECTIONS) {
+        const nextRow = row + dr;
+        const nextCol = col + dc;
+        if (nextRow < 0 || nextRow >= height || nextCol < 0 || nextCol >= width) {
+          continue;
+        }
+
+        const wallRow = row + nextRow + 1;
+        const wallCol = col + nextCol + 1;
+        if (grid[wallRow][wallCol] === 0) {
+          closedNeighbors.push([nextRow, nextCol]);
+        }
+      }
+
+      if (closedNeighbors.length === 0) {
+        continue;
+      }
+
+      const sameRegionCandidates = closedNeighbors.filter(
+        ([nextRow, nextCol]) => labels[row][col] === labels[nextRow][nextCol],
+      );
+      const crossRegionCandidates = closedNeighbors.filter(
+        ([nextRow, nextCol]) => labels[row][col] !== labels[nextRow][nextCol],
+      );
+
+      let candidatePool = closedNeighbors;
+      if (tuning.preferSameRegionBraids && sameRegionCandidates.length > 0) {
+        candidatePool = sameRegionCandidates;
+      } else if (!tuning.preferSameRegionBraids && crossRegionCandidates.length > 0) {
+        candidatePool = crossRegionCandidates;
+      }
+
+      const scoredCandidates = candidatePool.map((candidate) => {
+        const [nextRow, nextCol] = candidate;
+        const neighborDegree = countOpenNeighbors(grid, nextRow, nextCol, width, height);
+        const score = neighborDegree + random() * 0.01;
+        return { candidate, score };
+      });
+      scoredCandidates.sort((a, b) => b.score - a.score);
+
+      const chosen = scoredCandidates[0]?.candidate;
+      if (chosen === undefined) {
+        continue;
+      }
+
+      carvePassage(grid, row, col, chosen[0], chosen[1]);
+      onStep?.(grid);
+      changed = true;
+    }
+
+    if (!changed) {
+      break;
+    }
+  }
+}
+
 function collectEdges(width: number, height: number, labels: number[][]): {
   interRegion: CandidateEdge[];
   all: CandidateEdge[];
@@ -340,8 +640,28 @@ export class VoronoiDiagramGenerator implements IMazeGenerator {
     }
 
     const siteCount = chooseSiteCount(width, height, preset);
+
+    if (preset === 'region-border-doors') {
+      runLovableBorderDoorsVariant(grid, width, height, siteCount, random, onStep);
+      return grid;
+    }
+
     const sites = pickSites(width, height, siteCount, preset, random);
     const labels = assignVoronoiRegions(width, height, sites, preset);
+
+    if (preset === 'border-doors' || preset === 'border-doors-braided') {
+      const dsu = new DisjointSet(width * height);
+      carveIntraRegionForest(grid, width, height, labels, siteCount, random, dsu, onStep);
+      const tuning = getBorderDoorsTuning(preset);
+      const boundaryEdges = collectInterRegionEdges(
+        width,
+        height,
+        labels,
+      );
+      punchBoundaryDoors(grid, dsu, boundaryEdges, random, tuning.extraDoorChance, onStep);
+      braidDeadEnds(grid, width, height, labels, tuning, random, onStep);
+      return grid;
+    }
 
     const dsu = new DisjointSet(width * height);
     carveIntraRegionForest(grid, width, height, labels, siteCount, random, dsu, onStep);

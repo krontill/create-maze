@@ -18,7 +18,7 @@ const SPIRAL_SEEDS: number[] = ALGORITHM_VARIANTS
 type FractalMode = 'tile-substitution' | 'quadtree-division';
 type CellularAutomatonRulePreset = CellularAutomatonRule;
 type RoomsConnectionMode = 'manhattan-l' | 'random-walk' | 'nearest-mst';
-type VoronoiPreset = 'natural' | 'structured';
+type VoronoiPreset = 'natural' | 'structured' | 'border-doors' | 'border-doors-braided' | 'region-border-doors';
 
 const ROOMS_MODE_VARIANTS: Array<{ mode: RoomsConnectionMode; label: string }> = ALGORITHM_VARIANTS
   .filter((variant) => variant.algorithm === Algorithm.ROOMS_AND_CORRIDORS)
@@ -28,6 +28,16 @@ const ROOMS_MODE_VARIANTS: Array<{ mode: RoomsConnectionMode; label: string }> =
   }))
   .filter(
     (entry): entry is { mode: RoomsConnectionMode; label: string } => entry.mode !== undefined,
+  );
+
+const VORONOI_PRESET_VARIANTS: Array<{ preset: VoronoiPreset; label: string }> = ALGORITHM_VARIANTS
+  .filter((variant) => variant.algorithm === Algorithm.VORONOI_DIAGRAM)
+  .map((variant) => ({
+    preset: variant.voronoiPreset,
+    label: variant.label.replace('Voronoi Diagram (', '').replace(')', ''),
+  }))
+  .filter(
+    (entry): entry is { preset: VoronoiPreset; label: string } => entry.preset !== undefined,
   );
 
 function getFractalMode(section: HTMLElement): FractalMode | undefined {
@@ -95,10 +105,12 @@ function initSection(section: HTMLElement): void {
   const mazeEl = section.querySelector<HTMLElement>('.maze')!;
   const isSpiral = algo === Algorithm.SPIRAL_BACKTRACKER;
   const isRoomsAndCorridors = algo === Algorithm.ROOMS_AND_CORRIDORS;
+  const isVoronoi = algo === Algorithm.VORONOI_DIAGRAM;
 
   let spiralMazeTargets: HTMLElement[] = [];
   let roomsMazeTargets: HTMLElement[] = [];
-  if (isSpiral || isRoomsAndCorridors) {
+  let voronoiMazeTargets: HTMLElement[] = [];
+  if (isSpiral || isRoomsAndCorridors || isVoronoi) {
     const mazeWrap = section.querySelector<HTMLElement>('.maze-wrap')!;
     mazeWrap.innerHTML = '';
 
@@ -107,7 +119,9 @@ function initSection(section: HTMLElement): void {
 
     const variants = isSpiral
       ? SPIRAL_SEEDS.map((seed) => ({ key: String(seed), label: `Seed ${seed}` }))
-      : ROOMS_MODE_VARIANTS.map((entry) => ({ key: entry.mode, label: entry.label }));
+      : isRoomsAndCorridors
+        ? ROOMS_MODE_VARIANTS.map((entry) => ({ key: entry.mode, label: entry.label }))
+        : VORONOI_PRESET_VARIANTS.map((entry) => ({ key: entry.preset, label: entry.label }));
 
     const targets = variants.map((variant) => {
       const sampleEl = document.createElement('div');
@@ -129,8 +143,10 @@ function initSection(section: HTMLElement): void {
 
     if (isSpiral) {
       spiralMazeTargets = targets;
-    } else {
+    } else if (isRoomsAndCorridors) {
       roomsMazeTargets = targets;
+    } else {
+      voronoiMazeTargets = targets;
     }
 
     mazeWrap.appendChild(examplesEl);
@@ -167,6 +183,25 @@ function initSection(section: HTMLElement): void {
           height,
           algorithm: algo,
           roomsConnectionMode: mode,
+        });
+        renderMaze(matrix, target);
+      }
+      return;
+    }
+
+    if (isVoronoi) {
+      for (let i = 0; i < VORONOI_PRESET_VARIANTS.length; i++) {
+        const preset = VORONOI_PRESET_VARIANTS[i]?.preset;
+        const target = voronoiMazeTargets[i];
+        if (preset === undefined || target === undefined) {
+          continue;
+        }
+
+        const matrix = generateMaze({
+          width,
+          height,
+          algorithm: algo,
+          voronoiPreset: preset,
         });
         renderMaze(matrix, target);
       }

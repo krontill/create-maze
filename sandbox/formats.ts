@@ -54,7 +54,15 @@ function readRoomsMode(value: string): RoomsConnectionMode {
 }
 
 function readVoronoiPreset(value: string): VoronoiPreset {
-  return value === 'structured' ? 'structured' : 'natural';
+  if (
+    value === 'structured' ||
+    value === 'border-doors' ||
+    value === 'border-doors-braided' ||
+    value === 'region-border-doors'
+  ) {
+    return value;
+  }
+  return 'natural';
 }
 
 function readCaRule(value: string): CellularAutomatonRule {

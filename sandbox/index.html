@@ -322,16 +322,10 @@
       </section>
       <section class="card" data-algo="voronoi-diagram">
         <h2>Voronoi Diagram</h2>
-        <p>Partitions cells into Voronoi regions, then carves intra-region trees and sparse connectors between regions. Produces irregular, natural-looking structure. O(W×H×S) time, O(W×H) space.</p>
+        <p>Partitions cells into Voronoi regions, then carves intra-region trees and sparse connectors between regions. Includes Border Doors variants: Balanced keeps stronger chamber borders, Braided opens more alternative routes, and Region Border Doors matches the region-border walls plus random punched doors style. O(W×H×S) time, O(W×H) space.</p>
         <div class="controls">
           <label>W <input type="number" class="w-input" value="20" min="2" max="100" /></label>
           <label>H <input type="number" class="h-input" value="15" min="2" max="100" /></label>
-          <label>Preset
-            <select class="preset-input">
-              <option value="natural" selected>Natural</option>
-              <option value="structured">Structured</option>
-            </select>
-          </label>
           <button class="regen-btn">Regenerate</button>
         </div>
         <div class="maze-wrap"><div class="maze"></div></div>

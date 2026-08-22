@@ -13,7 +13,7 @@ interface AlgoVariant {
   caRule?: CellularAutomatonRule;
   fractalMode?: 'tile-substitution' | 'quadtree-division';
   roomsConnectionMode?: 'manhattan-l' | 'random-walk' | 'nearest-mst';
-  voronoiPreset?: 'natural' | 'structured';
+  voronoiPreset?: 'natural' | 'structured' | 'border-doors' | 'border-doors-braided' | 'region-border-doors';
 }
 
 interface AlgoEntry {
@@ -70,6 +70,9 @@ const VARIANT_MAP: Record<string, AlgoVariant> = {
   'fractal-tessellation-qt': toAlgoVariant(getSharedVariant('fractal-tessellation-quadtree-division'), 'Fractal Tessellation (Quadtree)'),
   'voronoi-natural': toAlgoVariant(getSharedVariant('voronoi-diagram-natural'), 'Voronoi (Natural)'),
   'voronoi-structured': toAlgoVariant(getSharedVariant('voronoi-diagram-structured'), 'Voronoi (Structured)'),
+  'voronoi-border-doors': toAlgoVariant(getSharedVariant('voronoi-diagram-border-doors'), 'Voronoi (Border Doors - Balanced)'),
+  'voronoi-border-doors-braided': toAlgoVariant(getSharedVariant('voronoi-diagram-border-doors-braided'), 'Voronoi (Border Doors - Braided)'),
+  'voronoi-region-border-doors': toAlgoVariant(getSharedVariant('voronoi-diagram-region-border-doors'), 'Voronoi (Region Border Doors)'),
   'rooms-manhattan': toAlgoVariant(getSharedVariant('rooms-and-corridors-manhattan-l'), 'Rooms & Corridors (Manhattan)'),
   'rooms-random-walk': toAlgoVariant(getSharedVariant('rooms-and-corridors-random-walk'), 'Rooms & Corridors (Walk)'),
   'rooms-nearest-mst': toAlgoVariant(getSharedVariant('rooms-and-corridors-nearest-mst'), 'Rooms & Corridors (MST)'),
