@@ -113,6 +113,14 @@ This repository includes project MCP server config in `.mcp.json` for:
 - `/formats.html` - one seeded maze rendered in both `Format.MATRIX` and `Format.GRAPH`
 - `/game.html` - playable maze game with DOM and canvas renderers
 
+## GitHub Pages Live URLs
+
+- https://krontill.github.io/maze-builder/
+- https://krontill.github.io/maze-builder/compare.html
+- https://krontill.github.io/maze-builder/visualizer.html
+- https://krontill.github.io/maze-builder/formats.html
+- https://krontill.github.io/maze-builder/game.html
+
 ## License
 
 MIT

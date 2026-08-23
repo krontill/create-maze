@@ -21,6 +21,8 @@
   "scripts": {
     "demo": "vite",
     "build": "vite build",
+    "build:sandbox": "vite build --config vite.sandbox.config.ts",
+    "preview:sandbox": "vite preview --config vite.sandbox.config.ts",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
