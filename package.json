@@ -7,11 +7,13 @@
   "module": "./dist/maze-builder.js",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/maze-builder.js",
       "require": "./dist/maze-builder.cjs"
     }
   },
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "files": ["dist"],
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
@@ -24,7 +26,27 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
-  "keywords": ["maze", "maze-generation", "algorithm", "dfs", "prims", "kruskals"],
+  "keywords": [
+    "maze",
+    "maze-generation",
+    "algorithm",
+    "procedural-generation",
+    "typescript",
+    "pathfinding",
+    "labyrinth",
+    "dfs",
+    "prims",
+    "kruskals"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/krontill/maze-builder.git"
+  },
+  "homepage": "https://github.com/krontill/maze-builder",
+  "bugs": {
+    "url": "https://github.com/krontill/maze-builder/issues"
+  },
+  "author": "Siarhei Shcherba aka Krontill",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^25.9.1",
