@@ -18,7 +18,7 @@ Built with Vite (Library mode). Dual ESM/CJS output with automatic `.d.ts` decla
 
 ## Core Entities & Interfaces
 When generating code, adhere to these conceptual data structures:
-- **MazeConfig:** An interface accepting `width` (number), `height` (number), `algorithm` (enum), and optionally `format` (enum), `seed` (number), `fractalMode` (`'tile-substitution' | 'quadtree-division'`), `roomsConnectionMode` (`'manhattan-l' | 'random-walk' | 'nearest-mst'`), `voronoiPreset` (`'natural' | 'structured'`), `caFillRatio` (number in `(0, 1)`), `caGenerations` (positive integer), and `caRule` (`'b5s45' | 'maze' | 'mazectric'`).
+- **MazeConfig:** An interface accepting `width` (number), `height` (number), `algorithm` (enum), and optionally `format` (enum), `seed` (number), `fractalMode` (`'tile-substitution' | 'quadtree-division'`), `roomsConnectionMode` (`'manhattan-l' | 'random-walk' | 'nearest-mst'`), `voronoiPreset` (`'natural' | 'structured' | 'border-doors' | 'border-doors-braided' | 'region-border-doors'`), `caFillRatio` (number in `(0, 1)`), `caGenerations` (positive integer), and `caRule` (`'b5s45' | 'maze' | 'mazectric'`).
 - **Output Format:** Algorithms should output a standardized format. By default, a 2D numeric array (`number[][]`), where `0` represents a wall and `1` represents a path.
 
 ## Public API
@@ -50,6 +50,7 @@ sandbox/
   compare.html   # Algorithm comparison page
   visualizer.html # Step-by-step generator page
   formats.html   # MATRIX + GRAPH explorer for one seeded maze
+  game.html      # Playable maze game with DOM and canvas renderers
 tests/           # Unit and integration tests
 ```
 

@@ -41,7 +41,7 @@ const graph = generateMaze({ width: 5, height: 5, algorithm: Algorithm.PRIMS, fo
 | `seed` | `number` | — | PRNG seed for reproducibility |
 | `fractalMode` | `'tile-substitution' \| 'quadtree-division'` | — | Fractal Tessellation mode (default: `'tile-substitution'`) |
 | `roomsConnectionMode` | `'manhattan-l' \| 'random-walk' \| 'nearest-mst'` | — | Rooms & Corridors connector strategy (default: `'manhattan-l'`) |
-| `voronoiPreset` | `'natural' \| 'structured'` | — | Voronoi Diagram preset (default: `'natural'`) |
+| `voronoiPreset` | `'natural' \| 'structured' \| 'border-doors' \| 'border-doors-braided' \| 'region-border-doors'` | — | Voronoi Diagram preset (default: `'natural'`) |
 | `caFillRatio` | `number` | — | Cellular Automaton initial alive-cell fill ratio in `(0, 1)` (default: `0.45`) |
 | `caGenerations` | `number` | — | Cellular Automaton generation count, positive integer (default: `4`) |
 | `caRule` | `'b5s45' \| 'maze' \| 'mazectric'` | — | Cellular Automaton rule preset (default: `'b5s45'`) |
@@ -111,6 +111,7 @@ This repository includes project MCP server config in `.mcp.json` for:
 - `/compare.html` - overlap comparison across selected algorithms
 - `/visualizer.html` - step-by-step generation snapshots
 - `/formats.html` - one seeded maze rendered in both `Format.MATRIX` and `Format.GRAPH`
+- `/game.html` - playable maze game with DOM and canvas renderers
 
 ## License
 
